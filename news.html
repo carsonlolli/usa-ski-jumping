@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>News & Results — USA Ski Jumping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0e1a;
+      --blue:   #0033a0;
+      --red:    #bf0d3e;
+      --white:  #ffffff;
+      --silver: #c8c8cc;
+      --gold:   #f5c518;
+      --dark:   #060910;
+      --mid:    #111827;
+      --card:   #161d2e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Oswald', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 3rem;
+      background: rgba(6, 9, 16, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-cta {
+      background: var(--red); color: var(--white) !important;
+      padding: 0.5rem 1.3rem; border-radius: 4px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #96092f !important; }
+
+    /* ── SHARED ── */
+    .btn-primary {
+      display: inline-block; background: var(--red); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: background 0.2s, transform 0.15s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .btn-primary:hover { background: #96092f; transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-block; border: 2px solid rgba(255,255,255,0.35);
+      color: var(--white); padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--silver);
+      line-height: 1.7; font-weight: 300; max-width: 600px; margin-bottom: 3rem;
+    }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      padding: 8rem 3rem 3rem;
+      background: var(--dark);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-hero .inner { max-width: 1200px; margin: 0 auto; }
+
+    /* ── NEWS STYLES ── */
+    .news-section { padding: 3rem 3rem 6rem; }
+    .news-section .inner { max-width: 1200px; margin: 0 auto; }
+
+    .news-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+    .news-featured {
+      background: var(--card); border-radius: 10px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative; transition: transform 0.25s;
+    }
+    .news-featured:hover { transform: translateY(-4px); }
+    .news-featured-img {
+      width: 100%; height: 320px;
+      background: linear-gradient(135deg, #0033a0 0%, #060910 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; overflow: hidden;
+    }
+    .news-featured-img img { width: 100%; height: 100%; object-fit: cover; }
+    .news-tag {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--red); color: var(--white);
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.28rem 0.7rem; border-radius: 3px;
+    }
+    .news-body { padding: 1.8rem; }
+    .news-date { font-size: 0.75rem; color: var(--silver); margin-bottom: 0.6rem; }
+    .news-headline { font-weight: 600; font-size: 1.3rem; line-height: 1.35; margin-bottom: 0.8rem; }
+    .news-excerpt { font-size: 0.88rem; color: var(--silver); line-height: 1.7; font-weight: 300; }
+    .news-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+    .news-card {
+      background: var(--card); border-radius: 8px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: flex; transition: transform 0.2s;
+    }
+    .news-card:hover { transform: translateX(4px); }
+    .news-card-img {
+      width: 90px; flex-shrink: 0;
+      background: linear-gradient(135deg, #0d1529, #162040);
+      display: flex; align-items: center; justify-content: center; font-size: 2rem;
+    }
+    .news-card-body { padding: 1rem; flex: 1; }
+    .news-card-date { font-size: 0.7rem; color: var(--silver); margin-bottom: 0.4rem; }
+    .news-card-title { font-size: 0.88rem; font-weight: 500; line-height: 1.4; }
+
+    /* ── ARTICLE CARDS ── */
+    .category-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 0.06em;
+      color: var(--white); margin-bottom: 1.2rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--red);
+      display: inline-block;
+    }
+    .articles-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .article-card {
+      background: var(--card); border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden; transition: transform 0.25s, border-color 0.25s;
+    }
+    .article-card:hover { transform: translateY(-5px); border-color: rgba(0,51,160,0.4); }
+    .article-icon {
+      padding: 1.8rem 1.5rem 0;
+      font-size: 2.2rem;
+    }
+    .article-body { padding: 1rem 1.5rem 1.5rem; }
+    .article-tag {
+      display: inline-block;
+      font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.2rem 0.55rem; border-radius: 3px;
+      margin-bottom: 0.6rem;
+    }
+    .tag-olympics { background: rgba(245,197,24,0.15); color: var(--gold); }
+    .tag-worldcup { background: rgba(0,51,160,0.2); color: #6ab0ff; }
+    .tag-team { background: rgba(191,13,62,0.15); color: #ff6b8a; }
+    .tag-milestone { background: rgba(255,255,255,0.08); color: var(--silver); }
+    .article-date { font-size: 0.72rem; color: var(--silver); margin-bottom: 0.5rem; }
+    .article-title { font-weight: 600; font-size: 1.05rem; line-height: 1.35; margin-bottom: 0.6rem; }
+    .article-excerpt { font-size: 0.82rem; color: var(--silver); line-height: 1.6; font-weight: 300; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: 0.875rem; color: var(--silver); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-col-title { font-weight: 600; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; color: var(--white); }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { color: var(--silver); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--silver);
+    }
+    .social-links { display: flex; gap: 0.75rem; }
+    .social-link {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; text-decoration: none; transition: background 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.12); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="usa-ski-jumping.html">
+    <div class="nav-logo-icon">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="usa-ski-jumping.html#about">About</a></li>
+    <li><a href="sponsor.html">Sponsor</a></li>
+    <li><a href="athletes.html">Athletes</a></li>
+    <li><a href="news.html" class="active">News</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="the-jump.html">The Jump</a></li>
+    <li><a href="sponsor.html#cta" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="inner">
+    <div class="section-tag">Latest Updates</div>
+    <h1 class="section-title" style="font-size:clamp(3rem, 6vw, 4.5rem);">NEWS &amp;<br>RESULTS</h1>
+    <p class="section-sub">Milestone moments, historic finishes, and Olympic dreams realized — it's been a breakthrough era for American ski jumping.</p>
+  </div>
+</div>
+
+<!-- NEWS CONTENT -->
+<div class="news-section">
+  <div class="inner">
+
+    <!-- FEATURED STORY -->
+    <div class="news-grid">
+      <div class="news-featured">
+        <div class="news-tag">Olympics 2026</div>
+        <div class="news-featured-img">
+          <img src="https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=700&q=80" alt="Olympics" onerror="this.parentElement.textContent='🏅'" />
+        </div>
+        <div class="news-body">
+          <div class="news-date">Feb 7–16, 2026 · Milano Cortina, Italy</div>
+          <div class="news-headline">Six U.S. Ski Jumpers Compete at 2026 Milano Cortina Olympic Winter Games</div>
+          <div class="news-excerpt">The United States fielded its strongest Olympic ski jumping team in years, with Kevin Bickner, Jason Colby, and Tate Frantz on the men's side and Annika Belshaw, Josie Johnson, and Paige Jones representing the women. Frantz delivered standout performances with a 21st on the normal hill and 19th on the large hill — the best results ever by a 20-year-old American Olympic ski jumper. The mixed team earned two 8th-place finishes.</div>
+        </div>
+      </div>
+      <div class="news-sidebar">
+        <div class="news-card">
+          <div class="news-card-img" style="background:linear-gradient(135deg,rgba(245,197,24,0.2),rgba(0,51,160,0.3))">🥇</div>
+          <div class="news-card-body">
+            <div class="news-card-date">Feb 2026 · Milano Cortina</div>
+            <div class="news-card-title">U.S. Mixed Team Finishes 8th Twice at Olympics — Best in Over a Decade</div>
+          </div>
+        </div>
+        <div class="news-card">
+          <div class="news-card-img" style="background:linear-gradient(135deg,rgba(0,51,160,0.2),rgba(0,51,160,0.3))">🎿</div>
+          <div class="news-card-body">
+            <div class="news-card-date">Feb 2026 · Milano Cortina</div>
+            <div class="news-card-title">Bickner Competes in Third Consecutive Olympics — Most Experienced U.S. Jumper</div>
+          </div>
+        </div>
+        <div class="news-card">
+          <div class="news-card-img" style="background:linear-gradient(135deg,rgba(191,13,62,0.2),rgba(0,51,160,0.3))">🇺🇸</div>
+          <div class="news-card-body">
+            <div class="news-card-date">Jan 2026</div>
+            <div class="news-card-title">Six Athletes Named to U.S. Olympic Ski Jumping Team for Milano Cortina</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OLYMPIC HIGHLIGHTS -->
+    <div class="category-label">Olympic Highlights</div>
+    <div class="articles-grid">
+      <div class="article-card">
+        <div class="article-icon">🏅</div>
+        <div class="article-body">
+          <span class="article-tag tag-olympics">Olympics</span>
+          <div class="article-date">Feb 2026 · Milano Cortina</div>
+          <div class="article-title">Frantz Makes Olympic History: Best-Ever Results by a 20-Year-Old American</div>
+          <div class="article-excerpt">Tate Frantz recorded finishes of 21st (normal hill) and 19th (large hill) at the 2026 Olympics — the strongest performances by an American ski jumper his age in Olympic history.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">⭐</div>
+        <div class="article-body">
+          <span class="article-tag tag-olympics">Olympics</span>
+          <div class="article-date">Feb 2026 · Milano Cortina</div>
+          <div class="article-title">Jones Realizes Olympic Dream Deferred from Beijing</div>
+          <div class="article-excerpt">19-year-old Paige Jones made her Olympic debut at Milano Cortina, fulfilling a dream that was deferred from the 2022 Beijing Games and capping an incredible breakout season.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">🎖️</div>
+        <div class="article-body">
+          <span class="article-tag tag-olympics">Olympics</span>
+          <div class="article-date">Feb 2026 · Milano Cortina</div>
+          <div class="article-title">Bickner's Third Olympic Games — A Career of Dedication</div>
+          <div class="article-excerpt">Kevin Bickner, who holds the U.S. ski flying record, competed in his third consecutive Olympic Winter Games, bringing invaluable experience to the young American squad.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WORLD CUP & COMPETITION -->
+    <div class="category-label">World Cup & Competition</div>
+    <div class="articles-grid">
+      <div class="article-card">
+        <div class="article-icon">📈</div>
+        <div class="article-body">
+          <span class="article-tag tag-worldcup">World Cup</span>
+          <div class="article-date">2025–26 Season</div>
+          <div class="article-title">U.S. Men Finish 8th in Nations Cup — Highest in Nearly 40 Years</div>
+          <div class="article-excerpt">The men's team secured its highest Nations Cup finish in almost four decades, signaling the program's resurgence on the world stage and the emergence of a competitive new generation.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">🔥</div>
+        <div class="article-body">
+          <span class="article-tag tag-worldcup">World Cup</span>
+          <div class="article-date">2024–25 Season</div>
+          <div class="article-title">Frantz's Breakout Year: World No. 22, Most WC Points by a U.S. Man Ever</div>
+          <div class="article-excerpt">At just 20, Tate Frantz collected more World Cup points in a single season than any American man in history, including a silver medal at the Junior World Championships.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">🤝</div>
+        <div class="article-body">
+          <span class="article-tag tag-worldcup">World Cup</span>
+          <div class="article-date">2025–26 Season</div>
+          <div class="article-title">Frantz &amp; Belshaw Take 7th in Super Team World Cup at Wisla</div>
+          <div class="article-excerpt">Tate Frantz and Erik Belshaw paired up for a 7th-place finish at the Super Team event in Wisla, Poland — another strong mixed-format showing for Team USA on the circuit.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WOMEN'S PROGRAM -->
+    <div class="category-label">Women's Program Breakthroughs</div>
+    <div class="articles-grid">
+      <div class="article-card">
+        <div class="article-icon">⭐</div>
+        <div class="article-body">
+          <span class="article-tag tag-milestone">Historic</span>
+          <div class="article-date">Jan 2026 · Ljubno, Slovenia</div>
+          <div class="article-title">Belshaw Cracks Top 10 — First U.S. Woman Since 2017</div>
+          <div class="article-excerpt">Annika Belshaw jumped to 7th place at the Ljubno World Cup, becoming the first American woman to crack the top 10 since the 2016–17 season. She opened the season by winning her eighth national title.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">🚀</div>
+        <div class="article-body">
+          <span class="article-tag tag-milestone">Career Best</span>
+          <div class="article-date">Jan 2026 · Ljubno, Slovenia</div>
+          <div class="article-title">Paige Jones Jumps to Career-Best 14th — Third Improvement This Season</div>
+          <div class="article-excerpt">19-year-old Paige Jones secured her first-ever top-15 finish at Ljubno, marking the third time this season she's improved her career-best World Cup result.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">💡</div>
+        <div class="article-body">
+          <span class="article-tag tag-milestone">First Ever</span>
+          <div class="article-date">2025–26 Season</div>
+          <div class="article-title">Johnson Makes History as First U.S. Woman in KO Duals at Two Nights Tour</div>
+          <div class="article-excerpt">Josie Johnson became the first American woman ever to compete in the KO Duals format at the Two Nights Tour, continuing to break new ground for the program.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM MILESTONES -->
+    <div class="category-label">Team Milestones</div>
+    <div class="articles-grid">
+      <div class="article-card">
+        <div class="article-icon">🏆</div>
+        <div class="article-body">
+          <span class="article-tag tag-team">Team USA</span>
+          <div class="article-date">2025–26 Season</div>
+          <div class="article-title">All Three U.S. Women Finish Top 30 at World Cup — A Program First</div>
+          <div class="article-excerpt">Belshaw, Johnson, and Jones all placed in the top 30 at the same World Cup event — a landmark milestone for the U.S. women's ski jumping program and a sign of its growing depth.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">📋</div>
+        <div class="article-body">
+          <span class="article-tag tag-team">Announcement</span>
+          <div class="article-date">Fall 2025</div>
+          <div class="article-title">2025–26 Stifel U.S. Ski Jumping Team Announced</div>
+          <div class="article-excerpt">Tate Frantz, Kevin Bickner, and Andrew Urlaub headline the men's A team roster. The full squad features the deepest group of American ski jumping talent in a generation.</div>
+        </div>
+      </div>
+      <div class="article-card">
+        <div class="article-icon">🎯</div>
+        <div class="article-body">
+          <span class="article-tag tag-team">Development</span>
+          <div class="article-date">2024–25 Season</div>
+          <div class="article-title">Bickner Sets Personal Bests: 28th World Cup, 19th Grand Prix</div>
+          <div class="article-excerpt">Kevin Bickner finished the 2024–25 season as the second-highest ranked U.S. man on the World Cup circuit (28th) and the highest in the Grand Prix (19th), both personal bests.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="text-align:center; margin-top:1rem; padding:3rem; background:linear-gradient(135deg, rgba(0,51,160,0.1), rgba(191,13,62,0.1)); border-radius:14px; border:1px solid rgba(255,255,255,0.06);">
+      <div class="section-tag" style="color:var(--silver)">Stay Connected</div>
+      <h3 style="font-family:'Bebas Neue',sans-serif; font-size:2rem; margin-bottom:0.8rem;">WANT MORE USA SKI JUMPING NEWS?</h3>
+      <p style="font-size:0.9rem; color:var(--silver); max-width:480px; margin:0 auto 1.5rem; font-weight:300; line-height:1.6;">Follow the team on social media and visit the official site for the latest competition results, athlete updates, and stories.</p>
+      <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="https://usaskijumping.com/results/" class="btn-primary" target="_blank">Official Results</a>
+        <a href="https://www.instagram.com/usaskijumping/" class="btn-outline" target="_blank">Follow on Instagram</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="nav-logo" href="usa-ski-jumping.html" style="margin-bottom:0.75rem;display:inline-flex">
+        <div class="nav-logo-icon">
+          <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+        </div>
+      </a>
+      <p>The National Leadership Organization for ski jumping in the United States. A 501(c)(3) nonprofit developing champions and growing the sport.</p>
+      <div class="social-links" style="margin-top:1.25rem">
+        <a class="social-link" href="https://www.instagram.com/usaskijumping/" title="Instagram" target="_blank">📸</a>
+        <a class="social-link" href="https://x.com/usaskijumping" title="X / Twitter" target="_blank">🐦</a>
+        <a class="social-link" href="https://www.facebook.com/USANordic/" title="Facebook" target="_blank">👥</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Explore</div>
+      <ul class="footer-links">
+        <li><a href="usa-ski-jumping.html#about">About Us</a></li>
+        <li><a href="athletes.html">Athletes</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="events.html">Events</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="sponsor.html">Sponsor an Athlete</a></li>
+        <li><a href="https://usaskijumping.com/donate/" target="_blank">Donate</a></li>
+        <li><a href="https://usaskijumping.com/" target="_blank">Official Site</a></li>
+        <li><a href="https://usaskijumping.com/athletes/ski-jumping/" target="_blank">Full Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="https://usaskijumping.com/" target="_blank">usaskijumping.com</a></li>
+        <li><a href="#">Park City, Utah</a></li>
+        <li><a href="#">Press Inquiries</a></li>
+        <li><a href="#">Sponsorship</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 USA Ski Jumping. All rights reserved.</span>
+    <span>Privacy Policy · Terms of Use</span>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.article-card, .news-featured, .news-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

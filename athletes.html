@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Athletes & Sponsorship — USA Ski Jumping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0e1a;
+      --blue:   #0033a0;
+      --red:    #bf0d3e;
+      --white:  #ffffff;
+      --silver: #c8c8cc;
+      --gold:   #f5c518;
+      --dark:   #060910;
+      --mid:    #111827;
+      --card:   #161d2e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Oswald', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 3rem;
+      background: rgba(6, 9, 16, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.3s;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-links a.active { color: var(--white); }
+    .nav-cta {
+      background: var(--red); color: var(--white) !important;
+      padding: 0.5rem 1.3rem; border-radius: 4px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #96092f !important; }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      padding: 10rem 3rem 4rem;
+      background: linear-gradient(180deg, var(--dark) 0%, var(--navy) 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,51,160,0.15) 0%, transparent 70%);
+    }
+    .page-hero .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+      position: relative;
+    }
+    .page-hero .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 1rem;
+      position: relative;
+    }
+    .page-hero .section-title span { color: var(--red); }
+    .page-hero .section-sub {
+      font-size: 1.05rem; color: var(--silver);
+      line-height: 1.7; font-weight: 300; max-width: 600px;
+      margin: 0 auto; position: relative;
+    }
+
+    /* ── SECTION SHARED ── */
+    section { padding: 5rem 3rem; }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--silver);
+      line-height: 1.7; font-weight: 300; max-width: 540px; margin-bottom: 3rem;
+    }
+
+    .btn-primary {
+      display: inline-block; background: var(--red); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: background 0.2s, transform 0.15s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .btn-primary:hover { background: #96092f; transform: translateY(-2px); }
+
+    /* ── ATHLETES ROSTER ── */
+    #roster { background: var(--navy); padding-top: 3rem; }
+    #roster .inner { max-width: 1200px; margin: 0 auto; }
+
+    .athletes-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
+    }
+
+    .athlete-card {
+      background: var(--card); border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .athlete-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0,51,160,0.5);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .athlete-img {
+      width: 100%; aspect-ratio: 3/4;
+      background: linear-gradient(145deg, #0d1529 0%, #162040 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; overflow: hidden; position: relative;
+    }
+    .athlete-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s;
+    }
+    .athlete-card:hover .athlete-img img { transform: scale(1.05); }
+    .athlete-img .olympic-badge {
+      position: absolute; top: 0.8rem; right: 0.8rem;
+      background: rgba(245,197,24,0.9); color: #000;
+      font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.25rem 0.65rem; border-radius: 4px;
+    }
+    .no-photo {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.5rem;
+      color: var(--silver); font-size: 0.8rem; font-weight: 300;
+    }
+    .no-photo-icon { font-size: 3rem; opacity: 0.5; }
+
+    .athlete-info { padding: 1.3rem; }
+    .athlete-name {
+      font-weight: 600; font-size: 1.1rem; margin-bottom: 0.2rem;
+      letter-spacing: 0.02em;
+    }
+    .athlete-team { font-size: 0.78rem; color: var(--silver); letter-spacing: 0.05em; font-weight: 400; }
+
+    /* ── CTA ── */
+    #cta {
+      background: linear-gradient(135deg, var(--blue) 0%, #001e6e 100%);
+      padding: 5rem 3rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    #cta .section-title { font-size: clamp(2.8rem, 5vw, 4.5rem); position: relative; }
+    #cta .section-sub { margin: 0 auto 2.5rem; text-align: center; color: rgba(255,255,255,0.7); position: relative; }
+    #cta .btn-primary { position: relative; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: 0.875rem; color: var(--silver); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-col-title { font-weight: 600; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; color: var(--white); }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { color: var(--silver); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--silver);
+    }
+    .social-links { display: flex; gap: 0.75rem; }
+    .social-link {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; text-decoration: none; transition: background 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.12); }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0.8rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      section { padding: 3.5rem 1.5rem; }
+      .sponsor-intro { grid-template-columns: 1fr; padding: 2rem; }
+      .sponsor-tiers { grid-template-columns: 1fr; }
+      .athletes-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="usa-ski-jumping.html">
+    <div class="nav-logo-icon">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="usa-ski-jumping.html#about">About</a></li>
+    <li><a href="sponsor.html">Sponsor</a></li>
+    <li><a href="#roster" class="active">Athletes</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="the-jump.html">The Jump</a></li>
+    <li><a href="sponsor.html#cta" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="section-tag">2025–26 National Team</div>
+  <h1 class="section-title">MEET <span>THE TEAM</span></h1>
+  <p class="section-sub">The men and women representing the United States on ski jumping hills around the world — from World Cup circuits to the 2026 Olympic Winter Games in Milano Cortina.</p>
+</div>
+
+<!-- ATHLETES ROSTER -->
+<section id="roster">
+  <div class="inner">
+    <div id="athletes-container"></div>
+    <div style="text-align:center; margin-top:3rem;" class="fade-up">
+      <a href="sponsor-athlete.html" class="btn-primary" style="font-size:0.95rem; padding:1rem 2.5rem;">Sponsor an Athlete</a>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="section-tag" style="position:relative;">Join the Movement</div>
+  <h2 class="section-title">EVERY DOLLAR<br>FUELS A DREAM</h2>
+  <p class="section-sub">Your tax-deductible contribution helps American ski jumpers train, travel, and compete at the highest level — from World Cup circuits to the 2026 Olympic Winter Games.</p>
+  <a href="https://usaskijumping.com/donate/" class="btn-primary" target="_blank">Donate Now</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" style="width:48px;height:48px;object-fit:contain;" />
+      <p>The national leadership organization for ski jumping in the United States — developing world-class athletes from grassroots programs to the Olympic stage.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="usa-ski-jumping.html">Home</a></li>
+        <li><a href="usa-ski-jumping.html#about">About</a></li>
+        <li><a href="#roster">Athletes</a></li>
+        <li><a href="news.html">News</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Get Involved</div>
+      <ul class="footer-links">
+        <li><a href="#sponsor-section">Sponsor</a></li>
+        <li><a href="https://usaskijumping.com/donate/" target="_blank">Donate</a></li>
+        <li><a href="https://usaskijumping.com" target="_blank">Official Site</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="mailto:info@usaskijumping.org">info@usaskijumping.org</a></li>
+        <li><a href="#">Park City, UT</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 USA Ski Jumping. All rights reserved. 501(c)(3) Nonprofit.</span>
+    <div class="social-links">
+      <a class="social-link" href="https://instagram.com/usaskijumping" target="_blank" title="Instagram">📷</a>
+      <a class="social-link" href="https://facebook.com/usaskijumping" target="_blank" title="Facebook">📘</a>
+      <a class="social-link" href="https://twitter.com/usaskijumping" target="_blank" title="X">✖</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── ATHLETE DATA ──
+  const athletes = [
+    { name: "Tate Frantz", team: "Men's A Team", photo: "athletes/Tate Franz 1.JPG", olympic: true },
+    { name: "Kevin Bickner", team: "Men's A Team", photo: "athletes/Kevin Bickner 1.JPG", olympic: true },
+    { name: "Andrew Urlaub", team: "Men's A Team", photo: "athletes/Andrew Urlaub 1.JPG", olympic: true },
+    { name: "Erik Belshaw", team: "Men's B Team", photo: "athletes/Erik Belshaw 1.JPG", olympic: false },
+    { name: "Jason Colby", team: "Men's B Team", photo: "athletes/Jason Colby 1.JPG", olympic: false },
+    { name: "Decker Dean", team: "Men's C Team", photo: "athletes/Decker Dean 1.JPG", olympic: false },
+    { name: "Annika Belshaw", team: "Women's A Team", photo: "athletes/Annika Belshaw 1.JPG", olympic: true },
+    { name: "Paige Jones", team: "Women's A Team", photo: "athletes/Paige Jones 1.JPG", olympic: true },
+    { name: "Josie Johnson", team: "Women's B Team", photo: "athletes/Josie Johnson 1.JPG", olympic: false },
+    { name: "Samantha Macuga", team: "Women's C Team", photo: "athletes/Sam Macuga 1.JPG", olympic: true },
+    { name: "Sandra Sproch", team: "Women's Development", photo: "athletes/Sandra Sproch 1.jpg", olympic: false },
+    { name: "Estella Hassrick", team: "Women's Development", photo: "athletes/Estella Hassrick 1.jpeg", olympic: false }
+  ];
+
+  // ── FISHER-YATES SHUFFLE ──
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const shuffled = shuffle(athletes);
+
+  function createCard(athlete) {
+    const imgContent = athlete.photo
+      ? `<img src="${athlete.photo}" alt="${athlete.name}" loading="lazy" />`
+      : `<div class="no-photo"><div class="no-photo-icon">🎿</div>${athlete.name}</div>`;
+
+    const olympicBadge = athlete.olympic
+      ? `<span class="olympic-badge">2026 Olympian</span>`
+      : '';
+
+    return `
+      <div class="athlete-card fade-up">
+        <div class="athlete-img">
+          ${imgContent}
+          ${olympicBadge}
+        </div>
+        <div class="athlete-info">
+          <div class="athlete-name">${athlete.name}</div>
+          <div class="athlete-team">${athlete.team}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  const container = document.getElementById('athletes-container');
+  container.innerHTML = `
+    <div class="athletes-grid">
+      ${shuffled.map(createCard).join('')}
+    </div>
+  `;
+
+  // ── SCROLL ANIMATIONS ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

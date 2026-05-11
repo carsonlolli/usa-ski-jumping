@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anatomy of a Jump — USA Ski Jumping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0a0e1a; --dark: #060910; --red: #bf0d3e;
+      --white: #fff; --silver: #c8c8cc; --blue: #0033a0; --card: #161d2e;
+    }
+    body {
+      font-family: 'Oswald', sans-serif;
+      background: #0a0a0f;
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 3rem;
+      background: rgba(6,9,16,0.85); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo { display: flex; align-items: center; text-decoration: none; }
+    .nav-logo img { width: 52px; height: 52px; object-fit: contain; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none; font-size: 0.82rem;
+      font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta { background: var(--red); color: var(--white) !important; padding: 0.5rem 1.3rem; border-radius: 4px; }
+
+    .scroll-spacer { height: 800vh; position: relative; }
+    #canvas-wrap { position: sticky; top: 0; width: 100%; height: 100vh; z-index: 1; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .hud { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 50; }
+
+    .intro {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; transition: opacity 0.5s;
+      background: radial-gradient(ellipse at center, rgba(200,210,220,0.55) 0%, rgba(200,210,220,0.3) 40%, transparent 70%);
+    }
+    .intro .tag {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: #8b1a2b; margin-bottom: 0.6rem;
+    }
+    .intro h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      line-height: 0.9; letter-spacing: 0.02em; margin-bottom: 1rem;
+      color: #111;
+    }
+    .intro h1 span { color: #8b1a2b; }
+    .intro p {
+      font-size: 1rem; color: #333; font-weight: 300;
+      max-width: 420px; line-height: 1.7; margin-bottom: 2rem;
+    }
+    .scroll-hint {
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      animation: bounce 2s infinite;
+    }
+    .scroll-hint span {
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase; color: #444;
+    }
+    .scroll-arrow {
+      width: 16px; height: 16px;
+      border-right: 2px solid #444;
+      border-bottom: 2px solid #444;
+      transform: rotate(45deg);
+    }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+
+    .phase-label {
+      position: absolute; top: 10%; left: 50%;
+      transform: translateX(-50%); text-align: center;
+      opacity: 0; transition: opacity 0.4s; white-space: nowrap;
+    }
+    .phase-label.show { opacity: 1; }
+    .phase-label .tag {
+      font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #8b1a2b; margin-bottom: 0.3rem;
+    }
+    .phase-label h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 3.5vw, 3.2rem); line-height: 0.95;
+      color: #111;
+    }
+    .phase-label p {
+      font-size: 0.82rem; color: #222;
+      font-weight: 300; margin-top: 0.4rem; max-width: 360px;
+    }
+
+    .annotation {
+      position: absolute; opacity: 0; transition: opacity 0.35s, transform 0.35s;
+      transform: translateY(8px); pointer-events: none;
+    }
+    .annotation.show { opacity: 1; transform: translateY(0); }
+    .ann-card {
+      background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px; padding: 0.7rem 0.9rem; width: 175px;
+    }
+    .ann-card .lbl {
+      font-size: 0.58rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: #8b1a2b; margin-bottom: 0.2rem;
+    }
+    .ann-card .txt {
+      font-size: 0.74rem; color: #222;
+      line-height: 1.5; font-weight: 300;
+    }
+    .ann-dot {
+      width: 7px; height: 7px; background: var(--white);
+      border-radius: 50%; position: absolute;
+      box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .ann-line { position: absolute; background: rgba(255,255,255,0.25); }
+
+    #ann-helmet { top: 18%; right: 8%; }
+    #ann-helmet .ann-dot { bottom: -14px; left: 10px; }
+    #ann-helmet .ann-line { width: 1px; height: 12px; bottom: -12px; left: 13px; }
+    #ann-suit { top: 42%; right: 5%; }
+    #ann-suit .ann-dot { top: 14px; left: -18px; }
+    #ann-suit .ann-line { width: 14px; height: 1px; top: 17px; left: -15px; }
+    #ann-skis { bottom: 22%; left: 6%; }
+    #ann-skis .ann-dot { top: -12px; right: 30px; }
+    #ann-skis .ann-line { width: 1px; height: 10px; top: -10px; right: 33px; }
+    #ann-boots { bottom: 36%; left: 4%; }
+    #ann-boots .ann-dot { top: 10px; right: -18px; }
+    #ann-boots .ann-line { width: 14px; height: 1px; top: 13px; right: -15px; }
+    #ann-crouch { top: 56%; right: 6%; }
+    #ann-crouch .ann-dot { top: 12px; left: -18px; }
+    #ann-crouch .ann-line { width: 14px; height: 1px; top: 15px; left: -15px; }
+    #ann-vshape { top: 22%; left: 5%; }
+    #ann-vshape .ann-dot { bottom: -14px; right: 20px; }
+    #ann-vshape .ann-line { width: 1px; height: 12px; bottom: -12px; right: 23px; }
+    #ann-lean { bottom: 25%; right: 6%; }
+    #ann-lean .ann-dot { top: 12px; left: -18px; }
+    #ann-lean .ann-line { width: 14px; height: 1px; top: 15px; left: -15px; }
+    #ann-telemark { bottom: 30%; left: 6%; }
+    #ann-telemark .ann-dot { top: -12px; right: 25px; }
+    #ann-telemark .ann-line { width: 1px; height: 10px; top: -10px; right: 28px; }
+
+    .progress-bar {
+      position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+      z-index: 100; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .prog-track {
+      width: 3px; height: 180px; background: rgba(255,255,255,0.07);
+      border-radius: 2px; overflow: hidden;
+    }
+    .prog-fill {
+      width: 100%; background: linear-gradient(180deg, var(--red), var(--white));
+      border-radius: 2px; transition: height 0.08s linear;
+    }
+    .prog-lbl {
+      font-size: 0.58rem; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--silver); writing-mode: vertical-lr;
+      transform: rotate(180deg);
+    }
+
+    .end-section {
+      background: var(--navy); padding: 5rem 3rem; text-align: center;
+      position: relative; z-index: 5;
+    }
+    .end-section .tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+    }
+    .end-section h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 0.95; margin-bottom: 1rem;
+    }
+    .end-section h2 span { color: var(--red); }
+    .end-section p {
+      font-size: 1rem; color: var(--silver);
+      font-weight: 300; max-width: 500px; margin: 0 auto 2rem; line-height: 1.7;
+    }
+    .btn-primary {
+      display: inline-block; background: var(--red); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; font-family: 'Oswald', sans-serif;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: #96092f; transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-block; border: 2px solid rgba(255,255,255,0.3);
+      color: var(--white); padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; font-family: 'Oswald', sans-serif;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 768px) {
+      nav { padding: 0.8rem 1.5rem; }
+      .nav-links { gap: 1rem; }
+      .ann-card { width: 140px; }
+      .progress-bar { right: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="usa-ski-jumping.html">
+    <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+  </a>
+  <ul class="nav-links">
+    <li><a href="usa-ski-jumping.html#about">About</a></li>
+    <li><a href="sponsor.html">Sponsor</a></li>
+    <li><a href="athletes.html">Athletes</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="the-jump.html">The Jump</a></li>
+    <li><a href="sponsor.html#cta" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<div class="progress-bar">
+  <div class="prog-lbl">Scroll</div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+</div>
+
+<div class="scroll-spacer" id="scrollSpacer">
+  <div id="canvas-wrap"></div>
+</div>
+
+<div class="hud" id="hud">
+  <div class="intro" id="intro">
+    <div class="tag">Interactive 3D Experience</div>
+    <h1>ANATOMY<br>OF A <span>JUMP</span></h1>
+    <p>Scroll to explore every phase of a ski jump in 3D — from the in-run tuck to the telemark landing, the camera orbits the athlete through each stage.</p>
+    <div class="scroll-hint"><span>Scroll to begin</span><div class="scroll-arrow"></div></div>
+  </div>
+
+  <div class="phase-label" id="ph-inrun"><div class="tag">Phase 1 — The Approach</div><h2>THE IN-RUN</h2><p>Deep aerodynamic tuck at 90 km/h. Chin nearly touching the knees, hands streamlined ahead.</p></div>
+  <div class="phase-label" id="ph-takeoff"><div class="tag">Phase 2 — Liftoff</div><h2>THE TAKEOFF</h2><p>Explosive extension from the lip in just 0.3 seconds — timing is everything.</p></div>
+  <div class="phase-label" id="ph-transition"><div class="tag">Phase 3 — Going Airborne</div><h2>THE TRANSITION</h2><p>Body pitches forward into flight position. Skis begin to open into the V-formation.</p></div>
+  <div class="phase-label" id="ph-soar"><div class="tag">Phase 4 — Peak Flight</div><h2>SOARING</h2><p>Body flat as a wing, skis wide in V-style. Top jumpers fly over 140 meters on large hills.</p></div>
+  <div class="phase-label" id="ph-land"><div class="tag">Phase 5 — Touchdown</div><h2>THE TELEMARK LANDING</h2><p>One foot forward, knees bent, arms wide — maximum style points from the judges.</p></div>
+
+  <div class="annotation" id="ann-helmet"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Helmet</div><div class="txt">Aerodynamic shell reduces drag up to 8%. Custom-molded to each athlete.</div></div></div>
+  <div class="annotation" id="ann-suit"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Jump Suit</div><div class="txt">Within 2cm of body measurements. Fabric permeability tested by FIS officials.</div></div></div>
+  <div class="annotation" id="ann-skis"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Skis</div><div class="txt">Up to 146% of body height. Wide, light, with upturned tips — designed for lift.</div></div></div>
+  <div class="annotation" id="ann-boots"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Boots &amp; Bindings</div><div class="txt">Only the toe binds to the ski. Flexible ankle for the forward lean in flight.</div></div></div>
+  <div class="annotation" id="ann-crouch"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Tuck Position</div><div class="txt">Minimizes frontal area. Athletes hit 90 km/h on the in-run.</div></div></div>
+  <div class="annotation" id="ann-vshape"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">V-Style Formation</div><div class="txt">28% more lift than parallel. Invented by Jan Bokl&ouml;v in 1985.</div></div></div>
+  <div class="annotation" id="ann-lean"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Body Angle</div><div class="txt">40–45 degree forward lean turns the body into a lifting surface — like an aircraft wing.</div></div></div>
+  <div class="annotation" id="ann-telemark"><div class="ann-dot"></div><div class="ann-line"></div><div class="ann-card"><div class="lbl">Telemark</div><div class="txt">One ski forward, one back, deeply bent. Worth up to 20 style points.</div></div></div>
+</div>
+
+<div class="end-section">
+  <div class="tag">Experience Complete</div>
+  <h2>READY TO <span>SUPPORT?</span></h2>
+  <p>Now that you've seen the science behind every jump, help our athletes represent the USA on the world stage.</p>
+  <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+    <a href="sponsor.html" class="btn-primary">Sponsor an Athlete</a>
+    <a href="athletes.html" class="btn-outline">Meet the Team</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const wrap = document.getElementById('canvas-wrap');
+  const W = window.innerWidth, H = window.innerHeight;
+
+  // ─── SCENE (winter sky, lighter for visibility) ───
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x8aa4c0);  // pale winter blue sky
+  scene.fog = new THREE.Fog(0x8aa4c0, 60, 180);  // linear fog for depth, matching sky
+
+  const camera = new THREE.PerspectiveCamera(42, W / H, 0.1, 500);
+  camera.position.set(6, 16, -10);
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  wrap.appendChild(renderer.domElement);
+
+  // ─── LIGHTING (bright outdoor winter) ───
+  scene.add(new THREE.AmbientLight(0x99aabb, 0.6));
+  const hemi = new THREE.HemisphereLight(0xb0c8e8, 0x8090a0, 0.5);
+  scene.add(hemi);
+
+  const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.6);
+  sunLight.position.set(8, 15, 5);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.set(2048, 2048);
+  sunLight.shadow.camera.near = 0.5;
+  sunLight.shadow.camera.far = 80;
+  sunLight.shadow.camera.left = -30;
+  sunLight.shadow.camera.right = 30;
+  sunLight.shadow.camera.top = 30;
+  sunLight.shadow.camera.bottom = -30;
+  sunLight.shadow.bias = -0.001;
+  scene.add(sunLight);
+
+  const rimLight = new THREE.DirectionalLight(0x6688cc, 0.6);
+  rimLight.position.set(-6, 8, -8);
+  scene.add(rimLight);
+
+  const fillLight = new THREE.DirectionalLight(0xaabbcc, 0.3);
+  fillLight.position.set(-4, 3, 6);
+  scene.add(fillLight);
+
+  // ─── SKI JUMP HILL (3D environment) ───
+  const snowMat = new THREE.MeshStandardMaterial({ color: 0xd8dce8, roughness: 0.85, metalness: 0.02 });
+  const snowDark = new THREE.MeshStandardMaterial({ color: 0xb0b8c8, roughness: 0.8, metalness: 0.02 });
+  const trackMat = new THREE.MeshStandardMaterial({ color: 0xc0c8d4, roughness: 0.6, metalness: 0.05 });
+  const metalMat = new THREE.MeshStandardMaterial({ color: 0x666680, roughness: 0.4, metalness: 0.6 });
+  const treeMat = new THREE.MeshStandardMaterial({ color: 0x1a3a2a, roughness: 0.9, metalness: 0 });
+  const trunkMat = new THREE.MeshStandardMaterial({ color: 0x3d2817, roughness: 0.9, metalness: 0 });
+
+  // Ground plane (snow-covered valley)
+  const groundGeo = new THREE.PlaneGeometry(300, 300);
+  const ground = new THREE.Mesh(groundGeo, snowMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -12;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // ─── RAMP PROFILE FUNCTION (shared by ramp, railings, scaffolding) ───
+  function rampY(t) {
+    const drop = 12.5;
+    const curved = 1 - Math.pow(1 - t, 1.8);
+    return 14 - drop * curved;
+  }
+  function rampZ(t) { return -16 + t * 13; }
+
+  // ─── IN-RUN RAMP — smooth steep track ───
+  function buildRamp() {
+    const rampGroup = new THREE.Group();
+    const segs = 50;        // more segments = smoother
+    const halfW = 0.85;
+
+    // ── Ramp surface (top + underside as one closed shape) ──
+    const positions = [], indices = [];
+    for (let i = 0; i <= segs; i++) {
+      const t = i / segs;
+      const z = rampZ(t), y = rampY(t);
+      positions.push(-halfW, y, z,  halfW, y, z);             // top surface
+    }
+    for (let i = 0; i <= segs; i++) {
+      const t = i / segs;
+      const z = rampZ(t), y = rampY(t) - 0.2;
+      positions.push(-halfW, y, z,  halfW, y, z);             // underside
+    }
+    // Top face triangles
+    for (let i = 0; i < segs; i++) {
+      const a = i*2, b = i*2+1, c = (i+1)*2, d = (i+1)*2+1;
+      indices.push(a, c, b,  b, c, d);
+    }
+    // Bottom face triangles (flipped winding)
+    const base = (segs + 1) * 2;
+    for (let i = 0; i < segs; i++) {
+      const a = base+i*2, b = base+i*2+1, c = base+(i+1)*2, d = base+(i+1)*2+1;
+      indices.push(a, b, c,  b, d, c);
+    }
+    // Side faces (left and right walls of the slab)
+    for (let i = 0; i < segs; i++) {
+      const tL = i*2, tLn = (i+1)*2, bL = base+i*2, bLn = base+(i+1)*2;
+      indices.push(tL, bL, tLn,  bL, bLn, tLn);               // left side
+      const tR = i*2+1, tRn = (i+1)*2+1, bR = base+i*2+1, bRn = base+(i+1)*2+1;
+      indices.push(tR, tRn, bR,  bR, tRn, bRn);               // right side
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geo.setIndex(indices);
+    geo.computeVertexNormals();
+    const rampMesh = new THREE.Mesh(geo, trackMat);
+    rampMesh.receiveShadow = true;
+    rampMesh.castShadow = true;
+    rampGroup.add(rampMesh);
+
+    // ── Continuous railings using TubeGeometry (smooth, even) ──
+    [-halfW - 0.06, halfW + 0.06].forEach(x => {
+      // Top rail (handrail)
+      const topPts = [], bottomPts = [];
+      for (let i = 0; i <= 30; i++) {
+        const t = i / 30;
+        topPts.push(new THREE.Vector3(x, rampY(t) + 0.5, rampZ(t)));
+        bottomPts.push(new THREE.Vector3(x, rampY(t) + 0.05, rampZ(t)));
+      }
+      const topCurve = new THREE.CatmullRomCurve3(topPts);
+      const topTube = new THREE.Mesh(
+        new THREE.TubeGeometry(topCurve, 40, 0.025, 6, false), metalMat
+      );
+      topTube.castShadow = true;
+      rampGroup.add(topTube);
+
+      // Bottom rail
+      const botCurve = new THREE.CatmullRomCurve3(bottomPts);
+      const botTube = new THREE.Mesh(
+        new THREE.TubeGeometry(botCurve, 40, 0.02, 6, false), metalMat
+      );
+      rampGroup.add(botTube);
+
+      // Mid rail
+      const midPts = [];
+      for (let i = 0; i <= 30; i++) {
+        const t = i / 30;
+        midPts.push(new THREE.Vector3(x, rampY(t) + 0.28, rampZ(t)));
+      }
+      const midCurve = new THREE.CatmullRomCurve3(midPts);
+      const midTube = new THREE.Mesh(
+        new THREE.TubeGeometry(midCurve, 40, 0.018, 6, false), metalMat
+      );
+      rampGroup.add(midTube);
+
+      // Vertical posts connecting top and bottom rails (evenly spaced)
+      for (let i = 0; i <= 20; i++) {
+        const t = i / 20;
+        const postY = rampY(t);
+        const postZ = rampZ(t);
+        const postH = 0.5;
+        const post = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.012, 0.012, postH, 6),
+          metalMat
+        );
+        post.position.set(x, postY + postH / 2 + 0.03, postZ);
+        rampGroup.add(post);
+      }
+    });
+
+    // ── Track grooves (two thin rails on the ramp for skis) ──
+    [-0.28, 0.28].forEach(xOff => {
+      const groovePts = [];
+      for (let i = 0; i <= 30; i++) {
+        const t = i / 30;
+        groovePts.push(new THREE.Vector3(xOff, rampY(t) + 0.015, rampZ(t)));
+      }
+      const grooveCurve = new THREE.CatmullRomCurve3(groovePts);
+      const groove = new THREE.Mesh(
+        new THREE.TubeGeometry(grooveCurve, 40, 0.022, 4, false),
+        new THREE.MeshStandardMaterial({ color: 0x556575, roughness: 0.3, metalness: 0.5 })
+      );
+      rampGroup.add(groove);
+    });
+
+    return rampGroup;
+  }
+  scene.add(buildRamp());
+
+  // ── Takeoff table (lip at bottom of in-run with slight upkick) ──
+  const tableGeo = new THREE.BoxGeometry(2.0, 0.2, 3.0);
+  const table = new THREE.Mesh(tableGeo, trackMat);
+  table.position.set(0, 1.3, -1.5);
+  table.rotation.x = -0.03;
+  table.receiveShadow = true;
+  table.castShadow = true;
+  scene.add(table);
+
+  // ── Support scaffolding under in-run ──
+  for (let i = 0; i < 12; i++) {
+    const t = i / 11;
+    const z = -16 + t * 11;
+    const yTop = rampY(t) - 0.2;
+    const h = yTop + 12;
+    if (h > 2) {
+      // Twin vertical columns (like real steel framework)
+      [-0.65, 0.65].forEach(x => {
+        const col = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.06, 0.08, h, 8),
+          metalMat
+        );
+        col.position.set(x, yTop - h / 2, z);
+        col.castShadow = true;
+        scene.add(col);
+      });
+      // Horizontal cross beam
+      const beam = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.04, 0.04, 1.3, 6),
+        metalMat
+      );
+      beam.rotation.z = Math.PI / 2;
+      beam.position.set(0, yTop - h * 0.35, z);
+      scene.add(beam);
+      // Diagonal X-brace every 3rd bay
+      if (i % 3 === 1 && h > 5) {
+        const diagLen = Math.sqrt(1.3 * 1.3 + (h * 0.3) * (h * 0.3));
+        const diagAngle = Math.atan2(h * 0.3, 1.3);
+        [1, -1].forEach(dir => {
+          const diag = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.025, 0.025, diagLen, 5),
+            metalMat
+          );
+          diag.position.set(0, yTop - h * 0.35, z);
+          diag.rotation.z = dir * diagAngle;
+          scene.add(diag);
+        });
+      }
+    }
+  }
+
+  // ── Landing hill slope ──
+  const landingShape = new THREE.Shape();
+  landingShape.moveTo(0, 0);
+  landingShape.lineTo(55, -18);
+  landingShape.lineTo(65, -18);
+  landingShape.lineTo(65, -22);
+  landingShape.lineTo(0, -4);
+  landingShape.closePath();
+  const landingGeo = new THREE.ExtrudeGeometry(landingShape, { depth: 10, bevelEnabled: false });
+  const landing = new THREE.Mesh(landingGeo, snowDark);
+  landing.position.set(-5, 0.5, 0);
+  landing.rotation.y = Math.PI / 2;
+  landing.receiveShadow = true;
+  scene.add(landing);
+
+  // Landing hill markings (distance lines, K-point)
+  const markerMat = new THREE.MeshStandardMaterial({ color: 0xcc2244, roughness: 0.4 });
+  for (let d = 10; d <= 50; d += 10) {
+    const marker = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.08, 0.15), markerMat);
+    const slope = 0.32;
+    marker.position.set(0, 0.3 - d * Math.sin(slope) * 0.32, d * 0.92);
+    marker.rotation.x = -slope;
+    scene.add(marker);
+  }
+  // K-point marker (wider, green)
+  const kPoint = new THREE.Mesh(
+    new THREE.BoxGeometry(4.5, 0.1, 0.25),
+    new THREE.MeshStandardMaterial({ color: 0x22aa44, roughness: 0.4 })
+  );
+  kPoint.position.set(0, 0.3 - 35 * Math.sin(0.32) * 0.32, 35 * 0.92);
+  kPoint.rotation.x = -0.32;
+  scene.add(kPoint);
+
+  // ── Start tower / judges tower ──
+  // More detailed tower with observation deck
+  const towerMat = new THREE.MeshStandardMaterial({ color: 0x555568, roughness: 0.4, metalness: 0.5 });
+  const towerShaft = new THREE.Mesh(new THREE.BoxGeometry(2.5, 18, 2.5), towerMat);
+  towerShaft.position.set(0, 22, -20);
+  towerShaft.castShadow = true;
+  scene.add(towerShaft);
+
+  // Observation deck at top
+  const deck = new THREE.Mesh(new THREE.BoxGeometry(4, 0.3, 4), towerMat);
+  deck.position.set(0, 31.2, -20);
+  deck.castShadow = true;
+  scene.add(deck);
+  // Deck roof
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(4.5, 0.15, 4.5), metalMat);
+  roof.position.set(0, 33.5, -20);
+  scene.add(roof);
+  // Deck walls (glass-like)
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x88bbdd, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+  [[-2, 0], [2, 0], [0, -2], [0, 2]].forEach(([dx, dz]) => {
+    const wall = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.2), glassMat);
+    wall.position.set(dx, 32.3, -20 + dz);
+    if (dx !== 0) wall.rotation.y = Math.PI / 2;
+    scene.add(wall);
+  });
+
+  // Wind screens along ramp sides
+  const windScreenMat = new THREE.MeshStandardMaterial({ color: 0x88aacc, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+  for (let i = 0; i < 8; i++) {
+    const t = i / 7;
+    const z = rampZ(t);
+    const y = rampY(t);
+    [-1.15, 1.15].forEach(x => {
+      const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 1.5), windScreenMat);
+      screen.position.set(x, y + 0.8, z);
+      if (x > 0) screen.rotation.y = Math.PI;
+      scene.add(screen);
+    });
+  }
+
+  // Judge tower (side of landing hill)
+  const judgeTower = new THREE.Mesh(new THREE.BoxGeometry(2.5, 6, 2.5), towerMat);
+  judgeTower.position.set(10, -2, 18);
+  judgeTower.castShadow = true;
+  scene.add(judgeTower);
+  const judgeTop = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.2, 3.5), metalMat);
+  judgeTop.position.set(10, 1.1, 18);
+  scene.add(judgeTop);
+
+  // Spectator stands (tiered)
+  const standMat = new THREE.MeshStandardMaterial({ color: 0x556070, roughness: 0.7, metalness: 0.3 });
+  for (let row = 0; row < 4; row++) {
+    const stand = new THREE.Mesh(new THREE.BoxGeometry(14, 0.6, 1.2), standMat);
+    stand.position.set(-12, -7 + row * 0.8, 18 + row * 1.3);
+    stand.rotation.y = 0.2;
+    scene.add(stand);
+  }
+
+  // Trees scattered around the venue
+  function addTree(x, z, scale) {
+    const s = scale || 1;
+    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12*s, 0.18*s, 2.5*s, 6), trunkMat);
+    trunk.position.set(x, -11 + s*1.2, z);
+    trunk.castShadow = true;
+    scene.add(trunk);
+    // Layered pine tree shape (3 cones stacked)
+    for (let layer = 0; layer < 3; layer++) {
+      const r = (1.4 - layer * 0.3) * s;
+      const h = (2.5 - layer * 0.4) * s;
+      const cone = new THREE.Mesh(new THREE.ConeGeometry(r, h, 7), treeMat);
+      cone.position.set(x, -9.5 + s*1.2 + layer * 1.2 * s, z);
+      cone.castShadow = true;
+      scene.add(cone);
+    }
+  }
+  // Tree clusters along the venue
+  [[-12,-15], [-15,-8], [-18,0], [-20,8], [-16,16], [-22,22], [-18,30],
+   [12,-12], [16,0], [18,10], [20,18], [15,26], [22,32], [17,38],
+   [-28,12], [-26,24], [28,8], [26,18], [-12,38], [12,42],
+   [-10,-20], [10,-18], [-24,-5], [24,-3]
+  ].forEach(([x,z]) => addTree(x, z, 0.7 + Math.random() * 0.9));
+
+  // Distant mountains
+  [[-45, 70], [0, 90], [45, 75], [-30, 85], [35, 95], [-60, 80], [60, 85]].forEach(([x,z]) => {
+    const h = 22 + Math.random() * 18;
+    const mtn = new THREE.Mesh(
+      new THREE.ConeGeometry(18 + Math.random()*12, h, 6),
+      new THREE.MeshStandardMaterial({ color: 0x7888a0, roughness: 0.85 })
+    );
+    mtn.position.set(x, -12 + h/2 - 6, z);
+    scene.add(mtn);
+    // Snow cap
+    const cap = new THREE.Mesh(
+      new THREE.ConeGeometry(6 + Math.random()*4, h*0.35, 6),
+      snowMat
+    );
+    cap.position.set(x, -12 + h - 6 - h*0.17, z);
+    scene.add(cap);
+  });
+
+  // ─── MATERIALS (colored suit like real ski jumpers) ───
+  // Main suit — USA team blue
+  const sculptMat = new THREE.MeshStandardMaterial({
+    color: 0x1a3a6e, roughness: 0.6, metalness: 0.05
+  });
+  // Darker accents (gloves, suit details)
+  const sculptDark = new THREE.MeshStandardMaterial({
+    color: 0x0e2548, roughness: 0.55, metalness: 0.08
+  });
+  // Lighter suit panels
+  const sculptLight = new THREE.MeshStandardMaterial({
+    color: 0x2a4e88, roughness: 0.55, metalness: 0.05
+  });
+  // Red accent (USA colors)
+  const accentMat = new THREE.MeshStandardMaterial({
+    color: 0xbf0d3e, roughness: 0.5, metalness: 0.08
+  });
+  // Helmet — white/light
+  const helmetMat = new THREE.MeshStandardMaterial({
+    color: 0xe8e8f0, roughness: 0.25, metalness: 0.12
+  });
+  // Goggles visor
+  const visorMat = new THREE.MeshStandardMaterial({
+    color: 0x1a1a28, roughness: 0.05, metalness: 0.8
+  });
+  // Ski — bright with graphics
+  const skiMat = new THREE.MeshStandardMaterial({
+    color: 0xe8e040, roughness: 0.3, metalness: 0.15
+  });
+  // Boot — dark
+  const bootMat = new THREE.MeshStandardMaterial({
+    color: 0x2a2a35, roughness: 0.5, metalness: 0.12
+  });
+  // Skin tone for face
+  const skinMat = new THREE.MeshStandardMaterial({
+    color: 0xd4b898, roughness: 0.7, metalness: 0.02
+  });
+
+  // ─── LATHE HELPER — creates smooth organic shapes from a profile ───
+  const SEG = 24; // radial segments for smoothness
+  function lathe(points, mat, phiLen) {
+    const geo = new THREE.LatheGeometry(points, SEG, 0, phiLen || Math.PI * 2);
+    const m = new THREE.Mesh(geo, mat || sculptMat);
+    m.castShadow = true;
+    return m;
+  }
+
+  // Profile point helpers
+  function v2(x, y) { return new THREE.Vector2(x, y); }
+
+  // ─── TORSO PROFILE (smooth sculpted shape, athletic build) ───
+  function createTorso() {
+    const g = new THREE.Group();
+    // Full torso as one smooth lathe — pelvis to shoulders
+    const pts = [
+      v2(0.001, -0.02),  // bottom center
+      v2(0.15, 0),       // pelvis
+      v2(0.155, 0.04),   // hip area
+      v2(0.13, 0.1),     // waist narrowing (athletic V-taper)
+      v2(0.125, 0.16),   // lower abs
+      v2(0.13, 0.22),    // abs
+      v2(0.148, 0.30),   // ribcage widening
+      v2(0.165, 0.38),   // chest
+      v2(0.17, 0.42),    // upper chest
+      v2(0.155, 0.47),   // shoulder line
+      v2(0.11, 0.52),    // neck base taper
+      v2(0.001, 0.54),   // top center
+    ];
+    const torso = lathe(pts, sculptMat);
+    torso.castShadow = true;
+    g.add(torso);
+
+    // Red accent stripe across chest (USA team detail)
+    const stripe = new THREE.Mesh(
+      new THREE.TorusGeometry(0.16, 0.018, 8, 24),
+      accentMat
+    );
+    stripe.position.y = 0.36;
+    stripe.rotation.x = Math.PI / 2;
+    g.add(stripe);
+
+    return g;
+  }
+
+  // ─── SMOOTH LIMB (tapered cylinder with rounded caps via lathe) ───
+  function createLimb(rTop, rBot, length, mat) {
+    const halfL = length / 2;
+    const capR = 0.015; // rounded cap radius
+    const pts = [
+      v2(0.001, -halfL - capR),
+      v2(rBot * 0.7, -halfL),
+      v2(rBot, -halfL + capR),
+      v2(rBot, -halfL * 0.3),
+      v2((rTop + rBot) * 0.5, 0),
+      v2(rTop, halfL * 0.3),
+      v2(rTop, halfL - capR),
+      v2(rTop * 0.7, halfL),
+      v2(0.001, halfL + capR),
+    ];
+    return lathe(pts, mat || sculptMat);
+  }
+
+  // ─── SMOOTH THIGH (muscular profile) ───
+  function createThigh() {
+    const pts = [
+      v2(0.001, -0.22),
+      v2(0.055, -0.2),
+      v2(0.068, -0.17),   // above knee (slimmer)
+      v2(0.065, -0.1),
+      v2(0.072, -0.02),   // mid thigh
+      v2(0.082, 0.05),    // upper thigh (thickest - muscle)
+      v2(0.085, 0.1),     // top thigh
+      v2(0.078, 0.16),
+      v2(0.06, 0.2),
+      v2(0.001, 0.22),
+    ];
+    return lathe(pts, sculptMat);
+  }
+
+  // ─── SMOOTH SHIN/CALF ───
+  function createShin() {
+    const pts = [
+      v2(0.001, -0.21),
+      v2(0.035, -0.19),   // ankle area
+      v2(0.042, -0.15),
+      v2(0.048, -0.08),   // lower calf
+      v2(0.058, 0),       // calf bulge
+      v2(0.062, 0.05),    // max calf
+      v2(0.055, 0.12),
+      v2(0.048, 0.16),
+      v2(0.04, 0.19),
+      v2(0.001, 0.21),
+    ];
+    return lathe(pts, sculptMat);
+  }
+
+  // ─── SMOOTH UPPER ARM ───
+  function createUpperArm() {
+    const pts = [
+      v2(0.001, -0.17),
+      v2(0.032, -0.15),
+      v2(0.04, -0.1),
+      v2(0.048, -0.03),  // bicep/deltoid area
+      v2(0.052, 0.02),   // thickest
+      v2(0.048, 0.08),
+      v2(0.042, 0.13),
+      v2(0.03, 0.16),
+      v2(0.001, 0.17),
+    ];
+    return lathe(pts, sculptMat);
+  }
+
+  // ─── SMOOTH FOREARM ───
+  function createForearm() {
+    const pts = [
+      v2(0.001, -0.15),
+      v2(0.025, -0.13),
+      v2(0.032, -0.08),   // wrist area (bottom)
+      v2(0.038, -0.02),
+      v2(0.042, 0.04),    // forearm meat
+      v2(0.04, 0.09),
+      v2(0.034, 0.12),
+      v2(0.025, 0.14),
+      v2(0.001, 0.15),
+    ];
+    return lathe(pts, sculptMat);
+  }
+
+  // ─── SMOOTH HAND ───
+  function createHand() {
+    const pts = [
+      v2(0.001, -0.05),
+      v2(0.02, -0.04),
+      v2(0.028, -0.02),
+      v2(0.03, 0),
+      v2(0.028, 0.02),
+      v2(0.022, 0.035),
+      v2(0.015, 0.045),
+      v2(0.001, 0.05),
+    ];
+    const hand = lathe(pts, sculptDark);
+    hand.scale.set(0.9, 1, 0.65);
+    return hand;
+  }
+
+  // ─── HELMET (smooth aerodynamic) ───
+  function createHelmet() {
+    const g = new THREE.Group();
+    // Main helmet shell
+    const pts = [
+      v2(0.001, -0.08),
+      v2(0.08, -0.07),
+      v2(0.115, -0.04),
+      v2(0.13, 0),
+      v2(0.135, 0.03),   // widest
+      v2(0.13, 0.06),
+      v2(0.115, 0.09),
+      v2(0.09, 0.115),
+      v2(0.05, 0.13),
+      v2(0.001, 0.135),
+    ];
+    const shell = lathe(pts, helmetMat);
+    shell.scale.set(0.95, 1.0, 1.05); // slightly elongated front-back
+    g.add(shell);
+
+    // Chin/jaw area (skin tone face)
+    const chin = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 16, 12, 0, Math.PI * 2, 0, Math.PI * 0.6),
+      skinMat
+    );
+    chin.position.set(0, -0.07, 0.04);
+    chin.scale.set(1.2, 0.8, 0.9);
+    g.add(chin);
+
+    // Visor/goggles
+    const visor = new THREE.Mesh(
+      new THREE.SphereGeometry(0.09, 20, 10, -Math.PI * 0.55, Math.PI * 1.1, Math.PI * 0.2, Math.PI * 0.35),
+      visorMat
+    );
+    visor.position.set(0, 0.01, 0.05);
+    g.add(visor);
+
+    return g;
+  }
+
+  // ─── BOOT (smooth sculpted) ───
+  function createBoot() {
+    const g = new THREE.Group();
+    // Boot body
+    const bootBody = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 14, 10),
+      bootMat
+    );
+    bootBody.scale.set(1.2, 0.9, 1.8);
+    bootBody.position.set(0, -0.02, 0.04);
+    g.add(bootBody);
+
+    // Boot cuff (upper)
+    const cuff = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.048, 0.055, 0.05, 12),
+      bootMat
+    );
+    cuff.position.set(0, 0.02, 0.01);
+    g.add(cuff);
+
+    return g;
+  }
+
+  // ─── SKI (sleek, realistic) ───
+  function createSki() {
+    const g = new THREE.Group();
+
+    // Main ski body — long, thin, flat
+    const bodyGeo = new THREE.BoxGeometry(0.06, 0.015, 2.0);
+    // Round the edges slightly
+    const body = new THREE.Mesh(bodyGeo, skiMat);
+    body.position.z = 0.35;
+    body.castShadow = true;
+    g.add(body);
+
+    // Upturned tip curve
+    const tipPts = [];
+    for (let i = 0; i <= 12; i++) {
+      const angle = (i / 12) * Math.PI * 0.45;
+      tipPts.push(new THREE.Vector3(0, Math.sin(angle) * 0.08, 1.35 + Math.cos(angle) * 0.08 - 0.08));
+    }
+    const tipCurve = new THREE.CatmullRomCurve3(tipPts);
+    const tipGeo = new THREE.TubeGeometry(tipCurve, 8, 0.028, 6, false);
+    const tip = new THREE.Mesh(tipGeo, skiMat);
+    tip.castShadow = true;
+    g.add(tip);
+
+    // Tail taper
+    const tail = new THREE.Mesh(
+      new THREE.BoxGeometry(0.04, 0.012, 0.06),
+      skiMat
+    );
+    tail.position.set(0, 0, -0.68);
+    g.add(tail);
+
+    // Binding (subtle raised block)
+    const binding = new THREE.Mesh(
+      new THREE.BoxGeometry(0.048, 0.022, 0.1),
+      sculptDark
+    );
+    binding.position.set(0, 0.018, 0.05);
+    g.add(binding);
+
+    return g;
+  }
+
+  // ─── BUILD FIGURE ───
+  const root = new THREE.Group();
+  scene.add(root);
+  const pelvis = new THREE.Group();
+  root.add(pelvis);
+
+  // Torso (one smooth piece)
+  const torsoJoint = new THREE.Group();
+  torsoJoint.position.y = 0.0;
+  pelvis.add(torsoJoint);
+
+  const torsoMesh = createTorso();
+  torsoMesh.position.y = 0.0;
+  torsoJoint.add(torsoMesh);
+
+  // Neck
+  const neckJoint = new THREE.Group();
+  neckJoint.position.y = 0.52;
+  torsoJoint.add(neckJoint);
+
+  const neckMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.045, 0.06, 0.08, 14),
+    sculptMat
+  );
+  neckMesh.position.y = 0.02;
+  neckMesh.castShadow = true;
+  neckJoint.add(neckMesh);
+
+  // Head/Helmet
+  const headGroup = createHelmet();
+  headGroup.position.y = 0.14;
+  neckJoint.add(headGroup);
+
+  // ─── ARMS (smooth sculpted limbs, no visible joints) ───
+  const lShoulderJoint = new THREE.Group();
+  lShoulderJoint.position.set(-0.2, 0.46, 0);
+  torsoJoint.add(lShoulderJoint);
+
+  // Deltoid cap (smooth transition from shoulder)
+  const lDeltoid = new THREE.Mesh(
+    new THREE.SphereGeometry(0.058, 14, 14),
+    sculptMat
+  );
+  lDeltoid.scale.set(1, 0.9, 0.85);
+  lDeltoid.castShadow = true;
+  lShoulderJoint.add(lDeltoid);
+
+  const lUA = createUpperArm();
+  lUA.position.y = -0.17;
+  lShoulderJoint.add(lUA);
+
+  const lElbowJoint = new THREE.Group();
+  lElbowJoint.position.y = -0.34;
+  lShoulderJoint.add(lElbowJoint);
+
+  const lFA = createForearm();
+  lFA.position.y = -0.15;
+  lElbowJoint.add(lFA);
+
+  const lHand = createHand();
+  lHand.position.y = -0.31;
+  lElbowJoint.add(lHand);
+
+  const rShoulderJoint = new THREE.Group();
+  rShoulderJoint.position.set(0.2, 0.46, 0);
+  torsoJoint.add(rShoulderJoint);
+
+  const rDeltoid = new THREE.Mesh(
+    new THREE.SphereGeometry(0.058, 14, 14),
+    sculptMat
+  );
+  rDeltoid.scale.set(1, 0.9, 0.85);
+  rDeltoid.castShadow = true;
+  rShoulderJoint.add(rDeltoid);
+
+  const rUA = createUpperArm();
+  rUA.position.y = -0.17;
+  rShoulderJoint.add(rUA);
+
+  const rElbowJoint = new THREE.Group();
+  rElbowJoint.position.y = -0.34;
+  rShoulderJoint.add(rElbowJoint);
+
+  const rFA = createForearm();
+  rFA.position.y = -0.15;
+  rElbowJoint.add(rFA);
+
+  const rHand = createHand();
+  rHand.position.y = -0.31;
+  rElbowJoint.add(rHand);
+
+  // ─── LEGS (smooth sculpted, no visible joint spheres) ───
+  function buildLeg(xOff) {
+    const hipJoint = new THREE.Group();
+    hipJoint.position.set(xOff, -0.04, 0);
+    pelvis.add(hipJoint);
+
+    // Smooth hip transition (subtle glute shape)
+    const hipCap = new THREE.Mesh(
+      new THREE.SphereGeometry(0.07, 14, 14),
+      sculptMat
+    );
+    hipCap.scale.set(1, 0.85, 0.9);
+    hipCap.castShadow = true;
+    hipJoint.add(hipCap);
+
+    const thigh = createThigh();
+    thigh.position.y = -0.22;
+    hipJoint.add(thigh);
+
+    const kneeJoint = new THREE.Group();
+    kneeJoint.position.y = -0.44;
+    hipJoint.add(kneeJoint);
+
+    // Smooth knee transition (no visible sphere)
+    const kneeCap = new THREE.Mesh(
+      new THREE.SphereGeometry(0.052, 12, 12),
+      sculptMat
+    );
+    kneeCap.scale.set(0.9, 0.7, 1.1);
+    kneeCap.position.y = 0;
+    kneeCap.castShadow = true;
+    kneeJoint.add(kneeCap);
+
+    const shin = createShin();
+    shin.position.y = -0.21;
+    kneeJoint.add(shin);
+
+    const ankleJoint = new THREE.Group();
+    ankleJoint.position.y = -0.42;
+    kneeJoint.add(ankleJoint);
+
+    // Boot
+    const boot = createBoot();
+    ankleJoint.add(boot);
+
+    // Ski
+    const ski = createSki();
+    ski.position.set(0, -0.065, 0);
+    ankleJoint.add(ski);
+
+    return { hipJoint, kneeJoint, ankleJoint, ski };
+  }
+
+  const lLeg = buildLeg(-0.11);
+  const rLeg = buildLeg(0.11);
+
+  // ─── NEW APPROACH: wrapper group for world-space position/orientation ───
+  // The 'root' stays at identity — only joint poses change.
+  // A 'world' wrapper moves the figure along the jump path and tilts it.
+  const world = new THREE.Group();
+  scene.add(world);
+  scene.remove(root);   // remove root from scene, re-parent into world
+  world.add(root);
+
+  // ─── POSE SYSTEM ───
+  // All rotations are LOCAL joint rotations. No rootX confusion.
+  // The figure stands upright in Y with face toward +Z.
+  // torsoX negative = fold forward, positive = lean back
+  // hipX negative = bring thigh forward/up, positive = extend back
+  // kneeX positive = bend knee (shin toward thigh)
+  // shoulderX: 0=arms down, 90=arms forward, 180=arms up/overhead
+  const D = Math.PI / 180;
+
+  // POSE 1: IN-RUN TUCK — deep aerodynamic crouch, arms tucked back along body
+  // Reference: athlete hunched forward, chest on knees, arms streamlined behind hips
+  const INRUN = {
+    torsoX: 78*D,         // FLIPPED — torso folds forward (was backwards)
+    neckX: -65*D,         // FLIPPED — head looks forward/up
+    lShX: 25*D, lShZ: -8*D, lElX: -25*D,   // FLIPPED — arms behind body
+    rShX: 25*D, rShZ: 8*D, rElX: -25*D,
+    lHipX: 55*D, lKnX: -70*D, lAnkX: 13*D,   // ankle tuned so skis align flat with ramp slope
+    rHipX: 55*D, rKnX: -70*D, rAnkX: 13*D,
+    lSkiY: 0, rSkiY: 0
+  };
+
+  // POSE 2: TAKEOFF — explosive extension, arms sweep forward and up
+  const TAKEOFF = {
+    torsoX: -18*D,        // torso opening up but still forward lean
+    neckX: 10*D,
+    lShX: 15*D, lShZ: 10*D, lElX: 20*D,   // arms down and back, tight to body
+    rShX: 15*D, rShZ: -10*D, rElX: 20*D,
+    lHipX: -15*D, lKnX: 12*D, lAnkX: -5*D,
+    rHipX: -15*D, rKnX: 12*D, rAnkX: -5*D,
+    lSkiY: -3*D, rSkiY: 3*D
+  };
+
+  // POSE 3: EARLY FLIGHT — transitioning, body starting to flatten
+  const EARLYFLIGHT = {
+    torsoX: -8*D,
+    neckX: 5*D,
+    lShX: 10*D, lShZ: 12*D, lElX: 15*D,   // arms down and back along body
+    rShX: 10*D, rShZ: -12*D, rElX: 15*D,
+    lHipX: -5*D, lKnX: 3*D, lAnkX: -3*D,
+    rHipX: -5*D, rKnX: 3*D, rAnkX: -3*D,
+    lSkiY: -12*D, rSkiY: 12*D
+  };
+
+  // POSE 4: SOAR — peak flight, body flat, V-style skis
+  const SOAR = {
+    torsoX: -3*D,         // torso nearly straight in line with body
+    neckX: 3*D,
+    lShX: 5*D, lShZ: 15*D, lElX: 10*D,    // arms pinned back at sides
+    rShX: 5*D, rShZ: -15*D, rElX: 10*D,
+    lHipX: 3*D, lKnX: -2*D, lAnkX: 0,
+    rHipX: 3*D, rKnX: -2*D, rAnkX: 0,
+    lSkiY: -25*D, rSkiY: 25*D
+  };
+
+  // POSE 5: TELEMARK — landing lunge
+  const TELEMARK = {
+    torsoX: -20*D,
+    neckX: 12*D,
+    lShX: 50*D, lShZ: 70*D, lElX: 12*D,
+    rShX: 50*D, rShZ: -70*D, rElX: 12*D,
+    lHipX: -60*D, lKnX: 70*D, lAnkX: 15*D,
+    rHipX: -8*D, rKnX: 48*D, rAnkX: -15*D,
+    lSkiY: 0, rSkiY: 0
+  };
+
+  function lerp(a, b, t) { return a + (b - a) * Math.max(0, Math.min(1, t)); }
+  function smooth(t) { t = Math.max(0, Math.min(1, t)); return t * t * (3 - 2 * t); }
+  function easeInOut(t) { t = Math.max(0, Math.min(1, t)); return t < 0.5 ? 16*t*t*t*t*t : 1-Math.pow(-2*t+2,5)/2; }
+  function lerpPose(a, b, t) {
+    const o = {};
+    for (const k in a) o[k] = lerp(a[k], b[k], t);
+    return o;
+  }
+
+  function applyPose(p) {
+    torsoJoint.rotation.x = p.torsoX;
+    neckJoint.rotation.x = p.neckX;
+    lShoulderJoint.rotation.x = p.lShX;
+    lShoulderJoint.rotation.z = p.lShZ;
+    lElbowJoint.rotation.x = p.lElX;
+    rShoulderJoint.rotation.x = p.rShX;
+    rShoulderJoint.rotation.z = p.rShZ;
+    rElbowJoint.rotation.x = p.rElX;
+    lLeg.hipJoint.rotation.x = p.lHipX;
+    lLeg.kneeJoint.rotation.x = p.lKnX;
+    lLeg.ankleJoint.rotation.x = p.lAnkX;
+    rLeg.hipJoint.rotation.x = p.rHipX;
+    rLeg.kneeJoint.rotation.x = p.rKnX;
+    rLeg.ankleJoint.rotation.x = p.rAnkX;
+    lLeg.ski.rotation.y = p.lSkiY;
+    rLeg.ski.rotation.y = p.rSkiY;
+  }
+
+  // ─── JUMP PATH — the figure moves along this 3D trajectory ───
+  // World-space: figure position (x, y, z) and body tilt angle
+  // The figure ALWAYS faces +Z in local space.
+  // worldTilt rotates the whole figure forward (positive = lean forward, head down)
+  function getJumpState(p) {
+    // p: 0..1 scroll progress
+    // Returns: { x, y, z, tilt }
+    // TILT: positive = lean forward (head toward +Z). The figure faces +Z.
+    // Ramp goes from z=-16 (y=14) down to z=-3 (y=1.5) — steep ~38° slope
+    if (p < 0.22) {
+      // IN-RUN: sliding down the steep ramp — Y follows ramp surface exactly
+      const t = p / 0.22;
+      const curved = 1 - Math.pow(1 - t, 1.8);
+      const rampSurface = 14 - 12.5 * curved;   // matches rampY(t)
+      return {
+        x: 0,
+        y: rampSurface + 1.35,                    // tuned so skis slide right on the ramp surface
+        z: lerp(-16, -3, t),
+        tilt: lerp(35*D, 28*D, t),
+      };
+    } else if (p < 0.38) {
+      // TAKEOFF: launching off the lip
+      const t = (p - 0.22) / 0.16;
+      return {
+        x: 0,
+        y: lerp(2.85, 5, smooth(t)),              // starts from ramp bottom + offset
+        z: lerp(-3, 3, t),
+        tilt: lerp(28*D, 50*D, smooth(t)),
+      };
+    } else if (p < 0.55) {
+      // TRANSITION: body rotating into flight angle
+      const t = (p - 0.38) / 0.17;
+      return {
+        x: 0,
+        y: lerp(5, 7, smooth(t)),
+        z: lerp(3, 12, t),
+        tilt: lerp(50*D, 72*D, smooth(t)),
+      };
+    } else if (p < 0.78) {
+      // SOAR: peak flight, body nearly horizontal
+      const t = (p - 0.55) / 0.23;
+      return {
+        x: 0,
+        y: lerp(7, 3, smooth(t)),
+        z: lerp(12, 30, t),
+        tilt: lerp(72*D, 80*D, t),
+      };
+    } else {
+      // LANDING: body coming back upright for telemark
+      const t = Math.min(1, (p - 0.78) / 0.2);
+      return {
+        x: 0,
+        y: lerp(3, -3, smooth(t)),
+        z: lerp(30, 42, t),
+        tilt: lerp(80*D, 8*D, easeInOut(t)),
+      };
+    }
+  }
+
+  applyPose(INRUN);
+
+  // ─── HUD ───
+  const intro = document.getElementById('intro');
+  const progFill = document.getElementById('progFill');
+  const phaseEls = {
+    inrun: document.getElementById('ph-inrun'),
+    takeoff: document.getElementById('ph-takeoff'),
+    transition: document.getElementById('ph-transition'),
+    soar: document.getElementById('ph-soar'),
+    land: document.getElementById('ph-land')
+  };
+  const annSets = {
+    inrun: ['ann-boots', 'ann-crouch', 'ann-helmet', 'ann-suit'],
+    takeoff: ['ann-boots', 'ann-skis'],
+    transition: ['ann-skis', 'ann-lean'],
+    soar: ['ann-vshape', 'ann-lean', 'ann-helmet', 'ann-suit'],
+    land: ['ann-telemark', 'ann-skis']
+  };
+  const allAnns = document.querySelectorAll('.annotation');
+
+  function hideAll() {
+    Object.values(phaseEls).forEach(e => e.classList.remove('show'));
+    allAnns.forEach(e => e.classList.remove('show'));
+  }
+
+  // ─── SCROLL HANDLER ───
+  const spacer = document.getElementById('scrollSpacer');
+  let ticking = false;
+
+  function onScroll() {
+    const p = Math.max(0, Math.min(1, window.pageYOffset / (spacer.offsetHeight - window.innerHeight)));
+    progFill.style.height = (p * 100) + '%';
+    intro.style.opacity = 1 - Math.min(1, p / 0.04);
+    hideAll();
+
+    // ── MOVE FIGURE ALONG JUMP PATH ──
+    const state = getJumpState(p);
+    world.position.set(state.x, state.y, state.z);
+    world.rotation.x = state.tilt;  // tilt entire figure (negative = forward lean)
+
+    // ── CAMERA — follows the figure with cinematic orbit ──
+    const figPos = new THREE.Vector3(state.x, state.y, state.z);
+    let camAngle, camDist, camH;
+
+    if (p < 0.22) {
+      // In-run: side view tracking alongside the ramp
+      const t = p / 0.22;
+      camAngle = lerp(1.2, 1.5, t);
+      camDist = lerp(8, 7, t);
+      camH = lerp(state.y + 2, state.y + 3, t);
+    } else if (p < 0.38) {
+      // Takeoff: pulling back to see the launch
+      const t = (p - 0.22) / 0.16;
+      camAngle = lerp(1.5, 2.0, t);
+      camDist = lerp(7, 8, t);
+      camH = lerp(state.y + 3, state.y + 2, t);
+    } else if (p < 0.55) {
+      // Transition: sweeping around
+      const t = (p - 0.38) / 0.17;
+      camAngle = lerp(2.0, 3.2, t);
+      camDist = lerp(8, 7, t);
+      camH = state.y + lerp(2, 3, t);
+    } else if (p < 0.78) {
+      // Soaring: full orbit around the flying figure
+      const t = (p - 0.55) / 0.23;
+      camAngle = lerp(3.2, 5.5, t);
+      camDist = lerp(7, 6, t);
+      camH = state.y + lerp(3, 2, t);
+    } else {
+      // Landing: camera comes around front
+      const t = Math.min(1, (p - 0.78) / 0.22);
+      camAngle = lerp(5.5, 7.0, t);
+      camDist = lerp(6, 8, t);
+      camH = state.y + lerp(2, 3, t);
+    }
+
+    camera.position.set(
+      figPos.x + Math.sin(camAngle) * camDist,
+      camH,
+      figPos.z + Math.cos(camAngle) * camDist
+    );
+    camera.lookAt(figPos.x, figPos.y + 0.5, figPos.z);
+
+    // ── POSE PHASES ──
+    let pose;
+    if (p < 0.05) {
+      pose = INRUN;
+    } else if (p < 0.22) {
+      const t = (p - 0.05) / 0.17;
+      phaseEls.inrun.classList.add('show');
+      showAnns('inrun', t);
+      pose = INRUN;
+    } else if (p < 0.38) {
+      const t = (p - 0.22) / 0.16;
+      phaseEls.takeoff.classList.add('show');
+      showAnns('takeoff', t);
+      pose = lerpPose(INRUN, TAKEOFF, easeInOut(t));
+    } else if (p < 0.55) {
+      const t = (p - 0.38) / 0.17;
+      phaseEls.transition.classList.add('show');
+      showAnns('transition', t);
+      pose = lerpPose(TAKEOFF, EARLYFLIGHT, smooth(t));
+    } else if (p < 0.78) {
+      const t = (p - 0.55) / 0.23;
+      phaseEls.soar.classList.add('show');
+      showAnns('soar', t);
+      pose = lerpPose(EARLYFLIGHT, SOAR, smooth(t));
+    } else if (p < 0.95) {
+      const t = (p - 0.78) / 0.17;
+      phaseEls.land.classList.add('show');
+      showAnns('land', t);
+      pose = lerpPose(SOAR, TELEMARK, easeInOut(t));
+    } else {
+      pose = TELEMARK;
+    }
+
+    applyPose(pose);
+    ticking = false;
+  }
+
+  function showAnns(group, t) {
+    (annSets[group] || []).forEach((id, i) => {
+      if (t > (i * 0.12 + 0.1)) document.getElementById(id).classList.add('show');
+    });
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+  onScroll();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+})();
+</script>
+
+</body>
+</html>

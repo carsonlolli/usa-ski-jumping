@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sponsor an Athlete — USA Ski Jumping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0e1a;
+      --blue:   #0033a0;
+      --red:    #bf0d3e;
+      --white:  #ffffff;
+      --silver: #c8c8cc;
+      --gold:   #f5c518;
+      --dark:   #060910;
+      --mid:    #111827;
+      --card:   #161d2e;
+      --bronze: #cd7f32;
+      --silver-metal: #c0c0c0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Oswald', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 3rem;
+      background: rgba(6, 9, 16, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-cta {
+      background: var(--red); color: var(--white) !important;
+      padding: 0.5rem 1.3rem; border-radius: 4px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #96092f !important; }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      padding: 10rem 3rem 5rem;
+      background: linear-gradient(180deg, var(--dark) 0%, var(--navy) 100%);
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(191,13,62,0.1) 0%, transparent 60%);
+    }
+    .page-hero * { position: relative; }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 1rem;
+    }
+    .section-title span { color: var(--red); }
+    .page-hero .section-title { font-size: clamp(3rem, 6vw, 5rem); }
+    .page-hero .section-sub {
+      font-size: 1.05rem; color: var(--silver);
+      line-height: 1.7; font-weight: 300; max-width: 620px; margin: 0 auto;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-primary {
+      display: inline-block; background: var(--red); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: background 0.2s, transform 0.15s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .btn-primary:hover { background: #96092f; transform: translateY(-2px); }
+    .btn-outline {
+      display: inline-block; border: 2px solid rgba(255,255,255,0.35);
+      color: var(--white); padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .btn-outline:hover { border-color: var(--white); background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+
+    /* ── WHY SPONSOR SECTION ── */
+    #why-sponsor { background: var(--dark); padding: 5rem 3rem; }
+    #why-sponsor .inner { max-width: 1100px; margin: 0 auto; }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+      margin-top: 3rem;
+    }
+    .why-card {
+      background: var(--card); border-radius: 12px; padding: 2rem;
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: transform 0.3s;
+    }
+    .why-card:hover { transform: translateY(-4px); }
+    .why-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .why-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; margin-bottom: 0.6rem; }
+    .why-desc { font-size: 0.88rem; color: var(--silver); line-height: 1.7; font-weight: 300; }
+
+    /* ── TIER DETAIL SECTION ── */
+    #tiers { background: var(--navy); padding: 5rem 3rem; }
+    #tiers .inner { max-width: 1200px; margin: 0 auto; }
+
+    .tier-detail {
+      display: grid; grid-template-columns: 340px 1fr; gap: 3rem;
+      align-items: start; margin-bottom: 4rem;
+      background: var(--card); border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .tier-detail:last-child { margin-bottom: 0; }
+    .tier-detail:hover { transform: none; }
+
+    .tier-detail.bronze { border-color: rgba(205,127,50,0.25); }
+    .tier-detail.bronze:hover { box-shadow: 0 10px 50px rgba(205,127,50,0.1); }
+    .tier-detail.silver { border-color: rgba(192,192,192,0.25); }
+    .tier-detail.silver:hover { box-shadow: 0 10px 50px rgba(192,192,192,0.1); }
+    .tier-detail.gold { border-color: rgba(245,197,24,0.25); }
+    .tier-detail.gold:hover { box-shadow: 0 10px 50px rgba(245,197,24,0.1); }
+
+    .tier-sidebar {
+      padding: 2.5rem 2rem;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      position: relative;
+    }
+    .tier-detail.bronze .tier-sidebar { background: linear-gradient(180deg, rgba(205,127,50,0.12) 0%, transparent 100%); }
+    .tier-detail.silver .tier-sidebar { background: linear-gradient(180deg, rgba(192,192,192,0.12) 0%, transparent 100%); }
+    .tier-detail.gold .tier-sidebar { background: linear-gradient(180deg, rgba(245,197,24,0.12) 0%, transparent 100%); }
+
+    .tier-sidebar .tier-icon { font-size: 3.5rem; margin-bottom: 1rem; }
+    .tier-sidebar .tier-name {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
+      margin-bottom: 0.3rem; letter-spacing: 0.04em;
+    }
+    .tier-detail.bronze .tier-name { color: var(--bronze); }
+    .tier-detail.silver .tier-name { color: var(--silver-metal); }
+    .tier-detail.gold .tier-name { color: var(--gold); }
+
+    .tier-sidebar .tier-price {
+      font-family: 'Bebas Neue', sans-serif; font-size: 3rem;
+      margin-bottom: 0.3rem; line-height: 1;
+    }
+    .tier-sidebar .tier-price small { font-size: 0.4em; color: var(--silver); }
+    .tier-sidebar .tier-annual {
+      font-size: 0.78rem; color: var(--silver); font-weight: 300; margin-bottom: 1.5rem;
+    }
+    .tier-sidebar .tier-btn {
+      display: inline-block; padding: 0.75rem 2rem;
+      border-radius: 6px; font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: all 0.25s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .tier-detail.bronze .tier-btn { background: var(--bronze); color: #1a1000; }
+    .tier-detail.silver .tier-btn { background: var(--silver-metal); color: #1a1a1a; }
+    .tier-detail.gold .tier-btn { background: var(--gold); color: #1a1000; }
+    .tier-btn:hover { transform: translateY(-2px); filter: brightness(1.15); }
+
+    .tier-content { padding: 2.5rem 2.5rem 2.5rem 0; }
+    .tier-content h3 {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem;
+      margin-bottom: 1.2rem; letter-spacing: 0.04em;
+    }
+
+    .perk-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
+    .perk-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+    }
+    .perk-icon {
+      width: 38px; height: 38px; flex-shrink: 0;
+      border-radius: 8px; display: flex;
+      align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .tier-detail.bronze .perk-icon { background: rgba(205,127,50,0.15); border: 1px solid rgba(205,127,50,0.3); }
+    .tier-detail.silver .perk-icon { background: rgba(192,192,192,0.15); border: 1px solid rgba(192,192,192,0.3); }
+    .tier-detail.gold .perk-icon { background: rgba(245,197,24,0.15); border: 1px solid rgba(245,197,24,0.3); }
+
+    .perk-text { flex: 1; }
+    .perk-title { font-weight: 600; font-size: 0.92rem; margin-bottom: 0.15rem; }
+    .perk-desc { font-size: 0.82rem; color: var(--silver); line-height: 1.6; font-weight: 300; }
+
+    .inherited-note {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-size: 0.72rem; color: var(--silver); font-weight: 400;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 1.5rem; padding: 0.35rem 0.8rem;
+      background: rgba(255,255,255,0.04); border-radius: 100px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* ── COMPARISON TABLE ── */
+    #compare { background: var(--dark); padding: 5rem 3rem; }
+    #compare .inner { max-width: 900px; margin: 0 auto; }
+
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      margin-top: 2.5rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: 0.9rem 1.2rem;
+      text-align: center; font-size: 0.88rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .compare-table th:first-child, .compare-table td:first-child {
+      text-align: left; font-weight: 400; color: var(--silver);
+    }
+    .compare-table thead th {
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+      padding-bottom: 1.2rem; border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+    .compare-table thead th:nth-child(2) { color: var(--bronze); }
+    .compare-table thead th:nth-child(3) { color: var(--silver-metal); }
+    .compare-table thead th:nth-child(4) { color: var(--gold); }
+    .compare-table tbody tr { transition: background 0.2s; }
+    .compare-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+    .check { color: var(--red); font-weight: 700; font-size: 1.1rem; }
+    .dash { color: rgba(255,255,255,0.15); }
+
+    /* ── CTA ── */
+    #cta {
+      background: linear-gradient(135deg, var(--blue) 0%, #001e6e 100%);
+      padding: 5rem 3rem; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    #cta * { position: relative; }
+    #cta .section-title { font-size: clamp(2.8rem, 5vw, 4.5rem); }
+    #cta .section-sub { margin: 0 auto 2.5rem; text-align: center; color: rgba(255,255,255,0.7); max-width: 540px; }
+    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: 0.875rem; color: var(--silver); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-col-title { font-weight: 600; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; color: var(--white); }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { color: var(--silver); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--silver);
+    }
+    .social-links { display: flex; gap: 0.75rem; }
+    .social-link {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; text-decoration: none; transition: background 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.12); }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .tier-detail { grid-template-columns: 1fr; }
+      .tier-content { padding: 0 2rem 2rem; }
+      .tier-sidebar { padding: 2rem; }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 0.8rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      section, #why-sponsor, #tiers, #compare { padding: 3.5rem 1.5rem; }
+      .why-grid { grid-template-columns: 1fr; }
+      .compare-table { font-size: 0.78rem; }
+      .compare-table th, .compare-table td { padding: 0.7rem 0.6rem; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="usa-ski-jumping.html">
+    <div class="nav-logo-icon">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="usa-ski-jumping.html#about">About</a></li>
+    <li><a href="#tiers" class="active">Sponsor</a></li>
+    <li><a href="athletes.html">Athletes</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="the-jump.html">The Jump</a></li>
+    <li><a href="#cta" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="section-tag">501(c)(3) Tax-Deductible</div>
+  <h1 class="section-title">SPONSOR AN<br><span>ATHLETE</span></h1>
+  <p class="section-sub">Unlike many countries where ski jumping is fully government-funded, American athletes rely on supporters like you to train, travel, and compete on the world stage. Choose a sponsorship tier below and directly fund an athlete's Olympic dream.</p>
+</div>
+
+<!-- WHY SPONSOR -->
+<section id="why-sponsor">
+  <div class="inner">
+    <div class="section-tag fade-up">Why It Matters</div>
+    <h2 class="section-title fade-up">YOUR IMPACT</h2>
+    <div class="why-grid">
+      <div class="why-card fade-up">
+        <div class="why-icon">🎿</div>
+        <div class="why-title">Training & Coaching</div>
+        <div class="why-desc">Covers world-class coaching, strength and conditioning programs, and year-round training at elite facilities across the U.S. and Europe.</div>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">✈️</div>
+        <div class="why-title">Travel & Competition</div>
+        <div class="why-desc">Funds travel to World Cup events, Continental Cup circuits, and the 2026 Winter Olympics in Milano Cortina, Italy.</div>
+      </div>
+      <div class="why-card fade-up">
+        <div class="why-icon">⚡</div>
+        <div class="why-title">Equipment & Support</div>
+        <div class="why-desc">Provides high-performance suits, skis, helmets, and essential gear, plus sports science and recovery support.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIER DETAILS -->
+<section id="tiers">
+  <div class="inner">
+    <div style="text-align:center; margin-bottom:4rem;">
+      <div class="section-tag fade-up">Choose Your Level</div>
+      <h2 class="section-title fade-up">SPONSORSHIP<br>TIERS</h2>
+    </div>
+
+    <!-- BRONZE -->
+    <div class="tier-detail bronze fade-up">
+      <div class="tier-sidebar">
+        <div class="tier-icon">🥉</div>
+        <div class="tier-name">BRONZE</div>
+        <div class="tier-price">$50<small>/mo</small></div>
+        <div class="tier-annual">$600 billed annually</div>
+        <a href="https://usaskijumping.com/donate/" class="tier-btn" target="_blank">Become a Bronze Sponsor</a>
+      </div>
+      <div class="tier-content">
+        <h3>THE FOUNDATION OF SUPPORT</h3>
+        <ul class="perk-list">
+          <li class="perk-item">
+            <div class="perk-icon">📰</div>
+            <div class="perk-text">
+              <div class="perk-title">Exclusive Team Newsletter</div>
+              <div class="perk-desc">Receive a monthly insider newsletter with behind-the-scenes stories, training camp recaps, competition results, and upcoming event previews — straight from the team.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">🛍️</div>
+            <div class="perk-text">
+              <div class="perk-title">Official Merch Voucher</div>
+              <div class="perk-desc">Get an annual USA Ski Jumping merchandise voucher redeemable in the official team store for apparel, accessories, and team gear.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">🏛️</div>
+            <div class="perk-text">
+              <div class="perk-title">Name on the Donor Wall</div>
+              <div class="perk-desc">Your name permanently displayed on the USA Ski Jumping digital donor wall, recognizing your commitment to the sport and our athletes.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">✉️</div>
+            <div class="perk-text">
+              <div class="perk-title">Athlete Updates, Letters & Videos</div>
+              <div class="perk-desc">Receive personal updates directly from your sponsored athlete — including handwritten thank-you letters, progress reports from training and competitions, and occasional video messages sharing their journey.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SILVER -->
+    <div class="tier-detail silver fade-up">
+      <div class="tier-sidebar">
+        <div class="tier-icon">🥈</div>
+        <div class="tier-name">SILVER</div>
+        <div class="tier-price">$150<small>/mo</small></div>
+        <div class="tier-annual">$1,800 billed annually</div>
+        <a href="https://usaskijumping.com/donate/" class="tier-btn" target="_blank">Become a Silver Sponsor</a>
+      </div>
+      <div class="tier-content">
+        <h3>CLOSER TO THE ACTION</h3>
+        <div class="inherited-note">✓ Includes everything in Bronze</div>
+        <ul class="perk-list">
+          <li class="perk-item">
+            <div class="perk-icon">🎽</div>
+            <div class="perk-text">
+              <div class="perk-title">Athlete-Worn Competition Bibs</div>
+              <div class="perk-desc">Receive an authentic competition bib worn by your sponsored athlete during an official event — a one-of-a-kind collectible signed and shipped directly to you.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">🧤</div>
+            <div class="perk-text">
+              <div class="perk-title">Athlete-Used Gear & Memorabilia</div>
+              <div class="perk-desc">Get exclusive access to athlete-worn items throughout the season — including training gear, gloves, goggles, and other signed equipment pieces that tell the story of their season.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">📸</div>
+            <div class="perk-text">
+              <div class="perk-title">Signed Team Photo Package</div>
+              <div class="perk-desc">Receive a high-quality, framed team photo signed by the full national team roster — a limited-edition keepsake updated each season.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">🎥</div>
+            <div class="perk-text">
+              <div class="perk-title">Quarterly Video Calls</div>
+              <div class="perk-desc">Join exclusive quarterly video calls with athletes and coaches for an inside look at the season, upcoming goals, and a chance to ask questions directly.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- GOLD -->
+    <div class="tier-detail gold fade-up">
+      <div class="tier-sidebar">
+        <div class="tier-icon">🥇</div>
+        <div class="tier-name">GOLD</div>
+        <div class="tier-price">$500<small>/mo</small></div>
+        <div class="tier-annual">$6,000 billed annually</div>
+        <a href="https://usaskijumping.com/donate/" class="tier-btn" target="_blank">Become a Gold Sponsor</a>
+      </div>
+      <div class="tier-content">
+        <h3>THE ULTIMATE EXPERIENCE</h3>
+        <div class="inherited-note">✓ Includes everything in Silver</div>
+        <ul class="perk-list">
+          <li class="perk-item">
+            <div class="perk-icon">🤝</div>
+            <div class="perk-text">
+              <div class="perk-title">Meet the Athletes at Competitions</div>
+              <div class="perk-desc">Get exclusive behind-the-scenes meet-and-greet access with athletes at domestic and select international competitions. Walk the venue, visit the warm-up area, and connect with the team face to face.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">🎟️</div>
+            <div class="perk-text">
+              <div class="perk-title">VIP Event Tickets</div>
+              <div class="perk-desc">Receive complimentary VIP tickets to USA Ski Jumping competitions and events — including premium seating, hospitality areas, and access to post-event celebrations with the team.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">👕</div>
+            <div class="perk-text">
+              <div class="perk-title">Name on Team Training Gear</div>
+              <div class="perk-desc">Your name or brand featured on official team training apparel worn by athletes during practice sessions, showing your direct connection to Team USA.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">🥂</div>
+            <div class="perk-text">
+              <div class="perk-title">Annual Gala Invitation</div>
+              <div class="perk-desc">An exclusive invitation to the annual USA Ski Jumping fundraising gala — a formal evening with athletes, coaches, Olympic legends, and fellow supporters celebrating the season's achievements.</div>
+            </div>
+          </li>
+          <li class="perk-item">
+            <div class="perk-icon">📋</div>
+            <div class="perk-text">
+              <div class="perk-title">Season Impact Report</div>
+              <div class="perk-desc">Receive a personalized end-of-season report detailing exactly how your sponsorship was used — including competition results, training milestones, and the direct impact of your support.</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARISON TABLE -->
+<section id="compare">
+  <div class="inner">
+    <div style="text-align:center;">
+      <div class="section-tag fade-up">At a Glance</div>
+      <h2 class="section-title fade-up">COMPARE TIERS</h2>
+    </div>
+    <table class="compare-table fade-up">
+      <thead>
+        <tr>
+          <th>Perk</th>
+          <th>Bronze</th>
+          <th>Silver</th>
+          <th>Gold</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Monthly team newsletter</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Official merch voucher</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Name on donor wall</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Athlete letters & video updates</td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Athlete-worn competition bibs</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Athlete-used gear & memorabilia</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Signed team photo package</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Quarterly video calls</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Meet athletes at competitions</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>VIP event tickets</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Name on team training gear</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Annual gala invitation</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Personalized season impact report</td>
+          <td><span class="dash">—</span></td>
+          <td><span class="dash">—</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="section-tag">Join the Movement</div>
+  <h2 class="section-title">EVERY DOLLAR<br>FUELS A DREAM</h2>
+  <p class="section-sub">Your tax-deductible contribution helps American ski jumpers compete at the highest level — from World Cup circuits to the 2026 Olympic Winter Games in Milano Cortina.</p>
+  <div class="cta-buttons">
+    <a href="https://usaskijumping.com/donate/" class="btn-primary" target="_blank">Donate Now</a>
+    <a href="athletes.html" class="btn-outline">Meet the Athletes</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" style="width:48px;height:48px;object-fit:contain;" />
+      <p>The national leadership organization for ski jumping in the United States — developing world-class athletes from grassroots programs to the Olympic stage.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="usa-ski-jumping.html">Home</a></li>
+        <li><a href="usa-ski-jumping.html#about">About</a></li>
+        <li><a href="athletes.html">Athletes</a></li>
+        <li><a href="news.html">News</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Get Involved</div>
+      <ul class="footer-links">
+        <li><a href="#tiers">Sponsorship Tiers</a></li>
+        <li><a href="https://usaskijumping.com/donate/" target="_blank">Donate</a></li>
+        <li><a href="https://usaskijumping.com" target="_blank">Official Site</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="mailto:info@usaskijumping.org">info@usaskijumping.org</a></li>
+        <li><a href="#">Park City, UT</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 USA Ski Jumping. All rights reserved. 501(c)(3) Nonprofit.</span>
+    <div class="social-links">
+      <a class="social-link" href="https://instagram.com/usaskijumping" target="_blank" title="Instagram">📷</a>
+      <a class="social-link" href="https://facebook.com/usaskijumping" target="_blank" title="Facebook">📘</a>
+      <a class="social-link" href="https://twitter.com/usaskijumping" target="_blank" title="X">✖</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

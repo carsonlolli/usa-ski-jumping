@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events & Schedule — USA Ski Jumping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0e1a;
+      --blue:   #0033a0;
+      --red:    #bf0d3e;
+      --white:  #ffffff;
+      --silver: #c8c8cc;
+      --gold:   #f5c518;
+      --dark:   #060910;
+      --mid:    #111827;
+      --card:   #161d2e;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Oswald', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 3rem;
+      background: rgba(6, 9, 16, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none;
+    }
+    .nav-logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-cta {
+      background: var(--red); color: var(--white) !important;
+      padding: 0.5rem 1.3rem; border-radius: 4px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #96092f !important; }
+
+    /* ── SHARED ── */
+    .btn-primary {
+      display: inline-block; background: var(--red); color: var(--white);
+      padding: 0.85rem 2rem; border-radius: 5px;
+      font-weight: 600; font-size: 0.85rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-decoration: none; transition: background 0.2s, transform 0.15s;
+      font-family: 'Oswald', sans-serif;
+    }
+    .btn-primary:hover { background: #96092f; transform: translateY(-2px); }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.8rem);
+      line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 1rem;
+    }
+    .section-sub {
+      font-size: 1rem; color: var(--silver);
+      line-height: 1.7; font-weight: 300; max-width: 600px; margin-bottom: 3rem;
+    }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      padding: 8rem 3rem 3rem;
+      background: var(--dark);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .page-hero .inner { max-width: 1200px; margin: 0 auto; }
+
+    /* ── EVENTS ── */
+    .events-section { padding: 3rem 3rem 6rem; }
+    .events-section .inner { max-width: 1200px; margin: 0 auto; }
+
+    .events-filter {
+      display: flex; gap: 0.75rem; margin-bottom: 2.5rem; flex-wrap: wrap;
+    }
+    .filter-btn {
+      background: var(--card); color: var(--silver);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 0.5rem 1.2rem; border-radius: 100px;
+      font-family: 'Oswald', sans-serif;
+      font-size: 0.78rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--white); }
+    .filter-btn.active { background: var(--blue); border-color: var(--blue); color: var(--white); }
+
+    .events-list { display: flex; flex-direction: column; gap: 1rem; }
+    .event-row {
+      display: grid; grid-template-columns: 80px 1fr auto;
+      gap: 1.5rem; align-items: center;
+      background: var(--card); border-radius: 8px; padding: 1.2rem 1.5rem;
+      border: 1px solid rgba(255,255,255,0.05);
+      border-left: 3px solid var(--blue);
+      transition: border-left-color 0.2s, transform 0.2s;
+    }
+    .event-row:hover { border-left-color: var(--red); transform: translateX(4px); }
+    .event-date-box { text-align: center; }
+    .event-month { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--red); }
+    .event-day { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; line-height: 1; color: var(--white); }
+    .event-name { font-weight: 500; font-size: 1rem; margin-bottom: 0.25rem; }
+    .event-location { font-size: 0.82rem; color: var(--silver); }
+    .event-type {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.35rem 0.8rem; border-radius: 100px;
+    }
+    .type-wc { background: rgba(245,197,24,0.12); color: var(--gold); border: 1px solid rgba(245,197,24,0.3); }
+    .type-olympic { background: rgba(245,197,24,0.2); color: var(--gold); border: 1px solid rgba(245,197,24,0.5); }
+    .type-national { background: rgba(0,51,160,0.18); color: #6ab0ff; border: 1px solid rgba(0,51,160,0.4); }
+    .type-training { background: rgba(255,255,255,0.05); color: var(--silver); border: 1px solid rgba(255,255,255,0.15); }
+    .type-continental { background: rgba(191,13,62,0.15); color: #ff6b8a; border: 1px solid rgba(191,13,62,0.3); }
+
+    .season-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 0.06em;
+      color: var(--white); margin-bottom: 1.2rem; margin-top: 2.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--red);
+      display: inline-block;
+    }
+    .season-label:first-of-type { margin-top: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: 0.875rem; color: var(--silver); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-col-title { font-weight: 600; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; color: var(--white); }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { color: var(--silver); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--silver);
+    }
+    .social-links { display: flex; gap: 0.75rem; }
+    .social-link {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; text-decoration: none; transition: background 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.12); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="usa-ski-jumping.html">
+    <div class="nav-logo-icon">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="usa-ski-jumping.html#about">About</a></li>
+    <li><a href="sponsor.html">Sponsor</a></li>
+    <li><a href="athletes.html">Athletes</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="events.html" class="active">Events</a></li>
+    <li><a href="the-jump.html">The Jump</a></li>
+    <li><a href="sponsor.html#cta" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="inner">
+    <div class="section-tag">Schedule</div>
+    <h1 class="section-title" style="font-size:clamp(3rem, 6vw, 4.5rem);">EVENTS &amp;<br>SCHEDULE</h1>
+    <p class="section-sub">From domestic competitions to the Olympic stage — follow the action all season long.</p>
+  </div>
+</div>
+
+<!-- EVENTS CONTENT -->
+<div class="events-section">
+  <div class="inner">
+
+    <!-- FILTER BUTTONS -->
+    <div class="events-filter">
+      <button class="filter-btn active" data-filter="all">All Events</button>
+      <button class="filter-btn" data-filter="olympic">Olympics</button>
+      <button class="filter-btn" data-filter="wc">World Cup</button>
+      <button class="filter-btn" data-filter="continental">Continental Cup</button>
+      <button class="filter-btn" data-filter="national">National</button>
+      <button class="filter-btn" data-filter="training">Training</button>
+    </div>
+
+    <!-- 2025-26 SEASON -->
+    <div class="season-label">2025–26 Season</div>
+    <div class="events-list">
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Nov</div>
+          <div class="event-day">22</div>
+        </div>
+        <div>
+          <div class="event-name">FIS World Cup — Wisla, Poland</div>
+          <div class="event-location">📍 Wisla, Poland · Large Hill Individual</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Dec</div>
+          <div class="event-day">6</div>
+        </div>
+        <div>
+          <div class="event-name">FIS World Cup — Lillehammer, Norway</div>
+          <div class="event-location">📍 Lillehammer, Norway · Normal Hill &amp; Large Hill</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Dec</div>
+          <div class="event-day">29</div>
+        </div>
+        <div>
+          <div class="event-name">Four Hills Tournament — Oberstdorf, Germany</div>
+          <div class="event-location">📍 Oberstdorf, Germany · Large Hill (1st of 4 stops)</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Jan</div>
+          <div class="event-day">1</div>
+        </div>
+        <div>
+          <div class="event-name">Four Hills Tournament — Garmisch-Partenkirchen</div>
+          <div class="event-location">📍 Garmisch-Partenkirchen, Germany · Large Hill (2nd of 4)</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Jan</div>
+          <div class="event-day">18</div>
+        </div>
+        <div>
+          <div class="event-name">FIS World Cup — Zakopane, Poland</div>
+          <div class="event-location">📍 Zakopane, Poland · Large Hill Individual &amp; Team</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="olympic">
+        <div class="event-date-box">
+          <div class="event-month">Feb</div>
+          <div class="event-day">6</div>
+        </div>
+        <div>
+          <div class="event-name">2026 Olympic Winter Games — Ski Jumping</div>
+          <div class="event-location">📍 Milano Cortina, Italy · Normal Hill &amp; Large Hill</div>
+        </div>
+        <span class="event-type type-olympic">Olympics</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Mar</div>
+          <div class="event-day">15</div>
+        </div>
+        <div>
+          <div class="event-name">FIS World Cup — Vikersund, Norway</div>
+          <div class="event-location">📍 Vikersund, Norway · Large Hill Individual</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Mar</div>
+          <div class="event-day">22</div>
+        </div>
+        <div>
+          <div class="event-name">FIS World Cup — Lahti, Finland</div>
+          <div class="event-location">📍 Lahti, Finland · Normal Hill + Large Hill</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="national">
+        <div class="event-date-box">
+          <div class="event-month">Apr</div>
+          <div class="event-day">5</div>
+        </div>
+        <div>
+          <div class="event-name">U.S. National Championships</div>
+          <div class="event-location">📍 Park City, Utah · All Hills</div>
+        </div>
+        <span class="event-type type-national">National</span>
+      </div>
+
+      <div class="event-row" data-type="training">
+        <div class="event-date-box">
+          <div class="event-month">May</div>
+          <div class="event-day">12</div>
+        </div>
+        <div>
+          <div class="event-name">Summer Training Camp</div>
+          <div class="event-location">📍 Lake Placid, New York · All Levels Welcome</div>
+        </div>
+        <span class="event-type type-training">Training</span>
+      </div>
+
+    </div>
+
+    <!-- SUMMER / OFF-SEASON -->
+    <div class="season-label">Summer 2026</div>
+    <div class="events-list">
+
+      <div class="event-row" data-type="continental">
+        <div class="event-date-box">
+          <div class="event-month">Jun</div>
+          <div class="event-day">14</div>
+        </div>
+        <div>
+          <div class="event-name">FIS Continental Cup — Courchevel, France</div>
+          <div class="event-location">📍 Courchevel, France · Normal Hill</div>
+        </div>
+        <span class="event-type type-continental">Continental</span>
+      </div>
+
+      <div class="event-row" data-type="training">
+        <div class="event-date-box">
+          <div class="event-month">Jul</div>
+          <div class="event-day">8</div>
+        </div>
+        <div>
+          <div class="event-name">USA Ski Jumping Summer Development Camp</div>
+          <div class="event-location">📍 Park City, Utah · Youth &amp; Junior Athletes</div>
+        </div>
+        <span class="event-type type-training">Training</span>
+      </div>
+
+      <div class="event-row" data-type="wc">
+        <div class="event-date-box">
+          <div class="event-month">Aug</div>
+          <div class="event-day">3</div>
+        </div>
+        <div>
+          <div class="event-name">FIS Summer Grand Prix — Wisla, Poland</div>
+          <div class="event-location">📍 Wisla, Poland · Large Hill on Porcelain Track</div>
+        </div>
+        <span class="event-type type-wc">World Cup</span>
+      </div>
+
+      <div class="event-row" data-type="national">
+        <div class="event-date-box">
+          <div class="event-month">Sep</div>
+          <div class="event-day">20</div>
+        </div>
+        <div>
+          <div class="event-name">U.S. Summer National Championships</div>
+          <div class="event-location">📍 Lake Placid, New York · All Hills</div>
+        </div>
+        <span class="event-type type-national">National</span>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="nav-logo" href="usa-ski-jumping.html" style="margin-bottom:0.75rem;display:inline-flex">
+        <div class="nav-logo-icon">
+          <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+        </div>
+      </a>
+      <p>The National Leadership Organization for ski jumping in the United States. A 501(c)(3) nonprofit developing champions and growing the sport.</p>
+      <div class="social-links" style="margin-top:1.25rem">
+        <a class="social-link" href="https://www.instagram.com/usaskijumping/" title="Instagram" target="_blank">📸</a>
+        <a class="social-link" href="https://x.com/usaskijumping" title="X / Twitter" target="_blank">🐦</a>
+        <a class="social-link" href="https://www.facebook.com/USANordic/" title="Facebook" target="_blank">👥</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Explore</div>
+      <ul class="footer-links">
+        <li><a href="usa-ski-jumping.html#about">About Us</a></li>
+        <li><a href="athletes.html">Athletes</a></li>
+        <li><a href="news.html">News</a></li>
+        <li><a href="events.html">Events</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Support</div>
+      <ul class="footer-links">
+        <li><a href="sponsor.html">Sponsor an Athlete</a></li>
+        <li><a href="https://usaskijumping.com/donate/" target="_blank">Donate</a></li>
+        <li><a href="https://usaskijumping.com/" target="_blank">Official Site</a></li>
+        <li><a href="https://usaskijumping.com/athletes/ski-jumping/" target="_blank">Full Roster</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="https://usaskijumping.com/" target="_blank">usaskijumping.com</a></li>
+        <li><a href="#">Park City, Utah</a></li>
+        <li><a href="#">Press Inquiries</a></li>
+        <li><a href="#">Sponsorship</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 USA Ski Jumping. All rights reserved.</span>
+    <span>Privacy Policy · Terms of Use</span>
+  </div>
+</footer>
+
+<script>
+  // Scroll animation
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.event-row').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.55s ease, transform 0.55s ease';
+    observer.observe(el);
+  });
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      document.querySelectorAll('.event-row').forEach(row => {
+        if (filter === 'all' || row.dataset.type === filter) {
+          row.style.display = '';
+          row.style.opacity = '0';
+          row.style.transform = 'translateY(24px)';
+          setTimeout(() => {
+            row.style.opacity = '1';
+            row.style.transform = 'translateY(0)';
+          }, 50);
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>
+</body>
+</html>

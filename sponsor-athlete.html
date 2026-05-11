@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose an Athlete to Sponsor — USA Ski Jumping</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #0a0e1a;
+      --blue:   #0033a0;
+      --red:    #bf0d3e;
+      --white:  #ffffff;
+      --silver: #c8c8cc;
+      --gold:   #f5c518;
+      --dark:   #060910;
+      --mid:    #111827;
+      --card:   #161d2e;
+      --bronze: #cd7f32;
+      --silver-metal: #c0c0c0;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Oswald', sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 3rem;
+      background: rgba(6, 9, 16, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .nav-logo-icon { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; }
+    .nav-logo-icon img { width: 100%; height: 100%; object-fit: contain; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      color: var(--silver); text-decoration: none;
+      font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--red); color: var(--white) !important;
+      padding: 0.5rem 1.3rem; border-radius: 4px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: #96092f !important; }
+
+    /* ── PAGE HERO ── */
+    .page-hero {
+      padding: 10rem 3rem 4rem;
+      background: linear-gradient(180deg, var(--dark) 0%, var(--navy) 100%);
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .page-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(191,13,62,0.1) 0%, transparent 60%);
+    }
+    .page-hero * { position: relative; }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--red); margin-bottom: 0.75rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5rem);
+      line-height: 0.95; letter-spacing: 0.02em; margin-bottom: 1rem;
+    }
+    .section-title span { color: var(--red); }
+    .page-hero-sub {
+      font-size: 1.05rem; color: var(--silver);
+      line-height: 1.7; font-weight: 300; max-width: 600px; margin: 0 auto 1.5rem;
+    }
+    .tier-link {
+      display: inline-block; font-size: 0.82rem; color: #ff6b8a;
+      text-decoration: none; letter-spacing: 0.08em;
+      border-bottom: 1px solid rgba(255,107,138,0.3);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tier-link:hover { color: var(--white); border-color: var(--white); }
+
+    /* ── ATHLETE GRID ── */
+    #athletes { background: var(--navy); padding: 4rem 3rem 5rem; }
+    #athletes .inner { max-width: 1200px; margin: 0 auto; }
+
+    .athletes-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem;
+    }
+
+    .athlete-card {
+      background: var(--card); border-radius: 12px; overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+    .athlete-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(191,13,62,0.4);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+    .athlete-img {
+      width: 100%; aspect-ratio: 3/4;
+      background: linear-gradient(145deg, #0d1529 0%, #162040 100%);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
+    }
+    .athlete-img img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.4s;
+    }
+    .athlete-card:hover .athlete-img img { transform: scale(1.05); }
+    .no-photo {
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.5rem;
+      color: var(--silver); font-size: 0.8rem; font-weight: 300;
+    }
+    .no-photo-icon { font-size: 3rem; opacity: 0.5; }
+
+    .athlete-info { padding: 1.2rem 1.3rem 0.6rem; }
+    .athlete-name { font-weight: 600; font-size: 1.05rem; margin-bottom: 0.15rem; }
+    .athlete-team { font-size: 0.75rem; color: var(--silver); letter-spacing: 0.05em; font-weight: 400; }
+
+    .sponsor-btn {
+      display: block; margin: 0.6rem 1.3rem 1.3rem; padding: 0.65rem;
+      background: var(--red); border: none;
+      color: var(--white); border-radius: 6px;
+      font-size: 0.78rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      text-align: center; text-decoration: none;
+      transition: all 0.25s; font-family: 'Oswald', sans-serif;
+      cursor: pointer;
+    }
+    .sponsor-btn:hover {
+      background: #96092f; transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(191,13,62,0.3);
+    }
+
+    /* ── ATHLETE DETAIL MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+      align-items: center; justify-content: center;
+      padding: 2rem;
+    }
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: var(--card); border-radius: 16px; max-width: 820px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem; z-index: 10;
+      width: 36px; height: 36px; border-radius: 50%;
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white); font-size: 1.1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.2); }
+
+    .modal-header {
+      display: flex; gap: 2rem; padding: 2rem 2rem 1.5rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .modal-photo {
+      width: 180px; height: 220px; border-radius: 10px; overflow: hidden; flex-shrink: 0;
+      background: linear-gradient(145deg, #0d1529 0%, #162040 100%);
+    }
+    .modal-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-athlete-info { display: flex; flex-direction: column; justify-content: center; }
+    .modal-athlete-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1; margin-bottom: 0.3rem;
+    }
+    .modal-athlete-team {
+      font-size: 0.82rem; color: var(--red); font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .modal-bio {
+      font-size: 0.92rem; color: var(--silver); line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ── TIER CARDS INSIDE MODAL ── */
+    .modal-tiers {
+      padding: 1.5rem 2rem 2rem;
+    }
+    .modal-tiers-title {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--silver); margin-bottom: 1.2rem;
+    }
+    .tier-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;
+    }
+    .tier-card {
+      background: rgba(255,255,255,0.03); border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.06);
+      padding: 1.5rem 1.2rem; text-align: center;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+    }
+    .tier-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+    }
+    .tier-card.bronze { border-color: rgba(205,127,50,0.3); }
+    .tier-card.bronze:hover { box-shadow: 0 12px 30px rgba(205,127,50,0.15); }
+    .tier-card.silver-tier { border-color: rgba(192,192,192,0.3); }
+    .tier-card.silver-tier:hover { box-shadow: 0 12px 30px rgba(192,192,192,0.15); }
+    .tier-card.gold { border-color: rgba(245,197,24,0.3); }
+    .tier-card.gold:hover { box-shadow: 0 12px 30px rgba(245,197,24,0.15); }
+
+    .tier-card-icon { font-size: 2.2rem; margin-bottom: 0.6rem; }
+    .tier-card-name {
+      font-weight: 700; font-size: 0.85rem;
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.4rem;
+    }
+    .tier-card.bronze .tier-card-name { color: var(--bronze); }
+    .tier-card.silver-tier .tier-card-name { color: var(--silver-metal); }
+    .tier-card.gold .tier-card-name { color: var(--gold); }
+
+    .tier-card-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem; line-height: 1; margin-bottom: 0.15rem;
+    }
+    .tier-card-price small { font-size: 0.45em; color: var(--silver); }
+    .tier-card-annual {
+      font-size: 0.7rem; color: var(--silver); font-weight: 300; margin-bottom: 1rem;
+    }
+    .tier-card-perks {
+      list-style: none; text-align: left; margin-bottom: 1.2rem;
+    }
+    .tier-card-perks li {
+      font-size: 0.75rem; color: var(--silver); font-weight: 300;
+      padding: 0.25rem 0; line-height: 1.5;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .tier-card-perks li:last-child { border-bottom: none; }
+    .tier-card-perks .check {
+      display: inline-block; width: 14px; margin-right: 0.4rem;
+    }
+    .tier-card.bronze .check { color: var(--bronze); }
+    .tier-card.silver-tier .check { color: var(--silver-metal); }
+    .tier-card.gold .check { color: var(--gold); }
+
+    .tier-card-btn {
+      display: block; width: 100%; padding: 0.6rem;
+      border: none; border-radius: 6px;
+      font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      text-align: center; text-decoration: none;
+      font-family: 'Oswald', sans-serif;
+      cursor: pointer; transition: all 0.25s;
+    }
+    .tier-card.bronze .tier-card-btn { background: var(--bronze); color: #1a1000; }
+    .tier-card.silver-tier .tier-card-btn { background: var(--silver-metal); color: #1a1a1a; }
+    .tier-card.gold .tier-card-btn { background: var(--gold); color: #1a1000; }
+    .tier-card-btn:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark); border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-grid {
+      max-width: 1200px; margin: 0 auto;
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+      padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 2rem;
+    }
+    .footer-brand p { font-size: 0.875rem; color: var(--silver); line-height: 1.7; margin-top: 1rem; max-width: 280px; }
+    .footer-col-title { font-weight: 600; font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; color: var(--white); }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { color: var(--silver); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--white); }
+    .footer-bottom {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.78rem; color: var(--silver);
+    }
+    .social-links { display: flex; gap: 0.75rem; }
+    .social-link {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; text-decoration: none; transition: background 0.2s;
+    }
+    .social-link:hover { background: rgba(255,255,255,0.12); }
+
+    /* ── ANIMATIONS ── */
+    .fade-up {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--dark); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0.8rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .page-hero { padding: 8rem 1.5rem 3rem; }
+      #athletes { padding: 3rem 1.5rem; }
+      .athletes-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+      .modal-header { flex-direction: column; align-items: center; text-align: center; }
+      .modal-photo { width: 140px; height: 180px; }
+      .tier-cards { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="usa-ski-jumping.html">
+    <div class="nav-logo-icon">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" />
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="usa-ski-jumping.html#about">About</a></li>
+    <li><a href="sponsor.html">Sponsor</a></li>
+    <li><a href="athletes.html">Athletes</a></li>
+    <li><a href="news.html">News</a></li>
+    <li><a href="events.html">Events</a></li>
+    <li><a href="the-jump.html">The Jump</a></li>
+    <li><a href="sponsor.html#cta" class="nav-cta">Donate</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="section-tag">Direct Athlete Sponsorship</div>
+  <h1 class="section-title">CHOOSE AN<br><span>ATHLETE</span></h1>
+  <p class="page-hero-sub">Select an athlete below to sponsor them directly. Your contribution funds their training, travel, and competition expenses on the road to victory.</p>
+  <a href="sponsor.html#tiers" class="tier-link">View sponsorship tier details →</a>
+</div>
+
+<!-- ATHLETES -->
+<section id="athletes">
+  <div class="inner">
+    <div id="athletes-container" class="athletes-grid"></div>
+  </div>
+</section>
+
+<!-- ATHLETE DETAIL MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modal-close">✕</button>
+    <div class="modal-header">
+      <div class="modal-photo" id="modal-photo"></div>
+      <div class="modal-athlete-info">
+        <div class="modal-athlete-name" id="modal-name"></div>
+        <div class="modal-athlete-team" id="modal-team"></div>
+        <div class="modal-bio" id="modal-bio"></div>
+      </div>
+    </div>
+    <div class="modal-tiers">
+      <div class="modal-tiers-title">Choose a sponsorship tier for <span id="modal-first-name"></span></div>
+      <div class="tier-cards">
+        <!-- BRONZE -->
+        <div class="tier-card bronze">
+          <div class="tier-card-icon">🥉</div>
+          <div class="tier-card-name">Bronze</div>
+          <div class="tier-card-price">$50<small>/mo</small></div>
+          <div class="tier-card-annual">$600 billed annually</div>
+          <ul class="tier-card-perks">
+            <li><span class="check">✓</span> Name on team website</li>
+            <li><span class="check">✓</span> Quarterly athlete updates</li>
+            <li><span class="check">✓</span> Digital thank-you from athlete</li>
+            <li><span class="check">✓</span> Tax-deductible donation receipt</li>
+          </ul>
+          <a href="https://usaskijumping.com/donate/" class="tier-card-btn" target="_blank">Sponsor — Bronze</a>
+        </div>
+        <!-- SILVER -->
+        <div class="tier-card silver-tier">
+          <div class="tier-card-icon">🥈</div>
+          <div class="tier-card-name">Silver</div>
+          <div class="tier-card-price">$150<small>/mo</small></div>
+          <div class="tier-card-annual">$1,800 billed annually</div>
+          <ul class="tier-card-perks">
+            <li><span class="check">✓</span> Everything in Bronze</li>
+            <li><span class="check">✓</span> Signed athlete photo</li>
+            <li><span class="check">✓</span> Monthly video updates</li>
+            <li><span class="check">✓</span> Name on athlete's gear bag</li>
+          </ul>
+          <a href="https://usaskijumping.com/donate/" class="tier-card-btn" target="_blank">Sponsor — Silver</a>
+        </div>
+        <!-- GOLD -->
+        <div class="tier-card gold">
+          <div class="tier-card-icon">🥇</div>
+          <div class="tier-card-name">Gold</div>
+          <div class="tier-card-price">$500<small>/mo</small></div>
+          <div class="tier-card-annual">$6,000 billed annually</div>
+          <ul class="tier-card-perks">
+            <li><span class="check">✓</span> Everything in Silver</li>
+            <li><span class="check">✓</span> VIP event access</li>
+            <li><span class="check">✓</span> 1-on-1 call with athlete</li>
+            <li><span class="check">✓</span> Logo on competition suit</li>
+          </ul>
+          <a href="https://usaskijumping.com/donate/" class="tier-card-btn" target="_blank">Sponsor — Gold</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="Ski Jumping Logo.png" alt="USA Ski Jumping" style="width:48px;height:48px;object-fit:contain;" />
+      <p>The national leadership organization for ski jumping in the United States — developing world-class athletes from grassroots programs to the Olympic stage.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="usa-ski-jumping.html">Home</a></li>
+        <li><a href="usa-ski-jumping.html#about">About</a></li>
+        <li><a href="athletes.html">Athletes</a></li>
+        <li><a href="news.html">News</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Get Involved</div>
+      <ul class="footer-links">
+        <li><a href="sponsor.html">Sponsorship Tiers</a></li>
+        <li><a href="https://usaskijumping.com/donate/" target="_blank">Donate</a></li>
+        <li><a href="https://usaskijumping.com" target="_blank">Official Site</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="mailto:info@usaskijumping.org">info@usaskijumping.org</a></li>
+        <li><a href="#">Park City, UT</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2026 USA Ski Jumping. All rights reserved. 501(c)(3) Nonprofit.</span>
+    <div class="social-links">
+      <a class="social-link" href="https://instagram.com/usaskijumping" target="_blank" title="Instagram">📷</a>
+      <a class="social-link" href="https://facebook.com/usaskijumping" target="_blank" title="Facebook">📘</a>
+      <a class="social-link" href="https://twitter.com/usaskijumping" target="_blank" title="X">✖</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const athletes = [
+    { name: "Tate Frantz", team: "Men's A Team", photo: "athletes/Tate Franz 1.JPG",
+      bio: "From Lake Placid, New York, Frantz made history at the 2026 Milan Cortina Olympics with the best result by a 20-year-old American Olympic ski jumper, finishing 21st on the normal hill and competing in all four Olympic jumping events." },
+    { name: "Kevin Bickner", team: "Men's A Team", photo: "athletes/Kevin Bickner 1.JPG",
+      bio: "From Wauconda, Illinois, Bickner discovered ski jumping at Norge Ski Club at age 9 and set a U.S. ski flying distance record of 244.5 meters at Vikersund in 2017. He competed in his third Olympics at 2026 Milan Cortina after previous appearances in 2018 and 2022." },
+    { name: "Andrew Urlaub", team: "Men's A Team", photo: "athletes/Andrew Urlaub 1.JPG",
+      bio: "Raised in the Adirondack region of New York, Urlaub was named to the U.S. Men's National Ski Jumping Team in 2019 and competes at the international level alongside teammates Bickner and Frantz." },
+    { name: "Erik Belshaw", team: "Men's B Team", photo: "athletes/Erik Belshaw 1.JPG",
+      bio: "From Steamboat Springs, Colorado, Belshaw became the first-ever U.S. male ski jumper to medal at the Junior World Championships with silver in 2024. His sister Annika also competes for the U.S. women's team." },
+    { name: "Jason Colby", team: "Men's B Team", photo: "athletes/Jason Colby 1.JPG",
+      bio: "The Steamboat Springs native achieved the best World Cup finish for a U.S. man in over 20 years with a 7th-place result in Engelberg in December 2024, and finished 20th in the men's normal hill at the 2026 Olympics." },
+    { name: "Decker Dean", team: "Men's C Team", photo: "athletes/Decker Dean 1.JPG",
+      bio: "Born in Leavenworth, Washington and raised in Steamboat Springs, Dean made his Olympic debut at Beijing 2022 and returned for the 2026 Milan Cortina Olympics." },
+    { name: "Annika Belshaw", team: "Women's A Team", photo: "athletes/Annika Belshaw 1.JPG",
+      bio: "From Steamboat Springs, Colorado, Belshaw is a ten-time U.S. National Champion who achieved a career-best 14th-place World Cup finish and became the first American woman to crack the top 10 in World Cup ski jumping." },
+    { name: "Paige Jones", team: "Women's A Team", photo: "athletes/Paige Jones 1.JPG",
+      bio: "From Park City, Utah, Jones discovered ski jumping at age 9 through a school program at the Utah Olympic Park. She became the first woman to jump an Olympic large hill at a World Championships and was named 2021 Ski Jumping Athlete of the Year." },
+    { name: "Josie Johnson", team: "Women's B Team", photo: "athletes/Josie Johnson 1.JPG",
+      bio: "The Park City native captured silver at the 2024 Youth Olympic Games, becoming the first American to reach the podium in ski jumping at a Youth Olympics. She finished 27th in the normal hill at the 2026 Winter Olympics at just 19 years old." },
+    { name: "Samantha Macuga", team: "Women's C Team", photo: "athletes/Sam Macuga 1.JPG",
+      bio: "From Park City, Utah, Macuga attends Dartmouth College studying mechanical engineering and has competed at two World Championships. She comes from a remarkable family where all four siblings compete in different Olympic skiing disciplines." },
+    { name: "Sandra Sproch", team: "Women's Development", photo: "athletes/Sandra Sproch 1.jpg",
+      bio: "From Chicago, Illinois, skiing for the Norge Ski Club, the 18-year-old Sproch helped secure USA's first silver medal in Mixed Team Jumping at the 2025 Junior World Championships." },
+    { name: "Estella Hassrick", team: "Women's Development", photo: "athletes/Estella Hassrick 1.jpeg",
+      bio: "From Madison, Wisconsin, Hassrick grew up at Blackhawk Ski Club and represented the U.S. at the 2024 Youth Olympic Games. She manages congenital hearing loss while competing at the elite level." }
+  ];
+
+  // Fisher-Yates shuffle
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  const shuffled = shuffle(athletes);
+  const container = document.getElementById('athletes-container');
+
+  shuffled.forEach((athlete, idx) => {
+    const imgContent = athlete.photo
+      ? `<img src="${athlete.photo}" alt="${athlete.name}" loading="lazy" />`
+      : `<div class="no-photo"><div class="no-photo-icon">🎿</div>${athlete.name}</div>`;
+
+    container.innerHTML += `
+      <div class="athlete-card fade-up" data-idx="${idx}">
+        <div class="athlete-img">
+          ${imgContent}
+        </div>
+        <div class="athlete-info">
+          <div class="athlete-name">${athlete.name}</div>
+          <div class="athlete-team">${athlete.team}</div>
+        </div>
+        <div class="sponsor-btn">Sponsor ${athlete.name.split(' ')[0]}</div>
+      </div>
+    `;
+  });
+
+  // Modal logic
+  const overlay = document.getElementById('modal-overlay');
+  const modal = document.getElementById('modal');
+  const closeBtn = document.getElementById('modal-close');
+
+  function openModal(athlete) {
+    document.getElementById('modal-name').textContent = athlete.name;
+    document.getElementById('modal-team').textContent = athlete.team;
+    document.getElementById('modal-bio').textContent = athlete.bio;
+    document.getElementById('modal-first-name').textContent = athlete.name.split(' ')[0];
+
+    const photoEl = document.getElementById('modal-photo');
+    if (athlete.photo) {
+      photoEl.innerHTML = `<img src="${athlete.photo}" alt="${athlete.name}" style="width:100%;height:100%;object-fit:cover;" />`;
+    } else {
+      photoEl.innerHTML = `<div class="no-photo" style="width:100%;height:100%;"><div class="no-photo-icon">🎿</div></div>`;
+    }
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  document.querySelectorAll('.athlete-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const idx = parseInt(card.dataset.idx);
+      openModal(shuffled[idx]);
+    });
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
